@@ -7,11 +7,12 @@ from models import User, AdminUser, Subject, Chapter, QuizQuestion, SiteSetting
 from utils.file_upload_handler import init_cloudinary
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user, UserMixin
 from werkzeug.security import generate_password_hash # For initial admin user
-from datetime import datetime # For datetime.now().year in templates
-import logging # ADDED: Import logging
+from datetime import datetime
+import logging
+from flask_session import Session # ADDED: Import Flask-Session
 
 # --- Setup logging ---
-logging.basicConfig(level=logging.INFO) # Set logging level to INFO
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # --- Load environment variables from .env file ---
@@ -28,17 +29,18 @@ logger.info(f"App SECRET_KEY loaded (length: {len(app.config['SECRET_KEY']) if a
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-# --- ADDED: Comprehensive Session cookie configuration for production ---
-# These are crucial for sessions to persist correctly on Render (HTTPS)
-app.config['SESSION_COOKIE_SECURE'] = True      # Only send cookie over HTTPS
-app.config['REMEMBER_COOKIE_SECURE'] = True     # Only send "remember me" cookie over HTTPS
+# --- ADDED: Flask-Session configuration for Server-Side Sessions ---
+app.config['SESSION_TYPE'] = 'sqlalchemy' # Store sessions in SQLAlchemy database
+app.config['SESSION_SQLALCHEMY'] = db # Use our existing SQLAlchemy database instance
+app.config['SESSION_USE_SIGNER'] = True # Sign the session ID cookie for security
+app.config['SESSION_PERMANENT'] = False # Sessions are not permanent by default (cleared on browser close)
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax' # Good default for CSRF protection
+
+# IMPORTANT for Render/Production (HTTPS):
+app.config['SESSION_COOKIE_SECURE'] = True      # Only send session cookie over HTTPS
+app.config['REMEMBER_COOKIE_SECURE'] = True     # For Flask-Login's remember me cookie
 app.config['SESSION_COOKIE_HTTPONLY'] = True    # Prevent client-side JS access to session cookie
-app.config['REMEMBER_COOKIE_HTTPONLY'] = True   # Prevent client-side JS access to remember me cookie
-app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'   # Good default for CSRF protection and cookie sending
-app.config['REMEMBER_COOKIE_SAMESITE'] = 'Lax'
-# You might need to set a specific SESSION_COOKIE_DOMAIN for Render if it's causing issues.
-# E.g., app.config['SESSION_COOKIE_DOMAIN'] = '.onrender.com'
-# But try without it first.
+app.config['REMEMBER_COOKIE_HTTPONLY'] = True   # For Flask-Login's remember me cookie
 # --- END ADDITION ---
 
 
@@ -50,9 +52,12 @@ if not os.path.exists(os.path.join(app.root_path, app.config['UPLOAD_FOLDER'])):
 init_db(app) # Initialize SQLAlchemy
 init_cloudinary(app) # Initialize Cloudinary (requires CLOUDINARY_CLOUD_NAME etc. in .env)
 
+# Initialize Flask-Session AFTER db is initialized
+server_session = Session(app) # ADDED: Initialize Flask-Session
+
 login_manager = LoginManager()
 login_manager.init_app(app)
-login_manager.login_view = 'auth.login' # Define the login view for redirection
+login_manager.login_view = 'auth.login'
 login_manager.login_message_category = 'info'
 login_manager.login_message = "Please log in to access this page."
 
@@ -81,7 +86,7 @@ def load_user(user_id):
             return UserAdapter(admin_user)
     else:
         try:
-            user_id_int = int(user_id) # Regular user ID is just integer
+            user_id_int = int(user_id)
             regular_user = User.query.get(user_id_int)
             if regular_user:
                 logger.info(f"load_user: Found User {regular_user.username}")
@@ -104,7 +109,9 @@ app.register_blueprint(admin_bp, url_prefix='/admin')
 
 # --- Database Initialization and Initial Data Setup ---
 with app.app_context():
-    db.create_all()
+    # Flask-Session needs its table created explicitly
+    db.create_all() # Create all application tables
+    server_session.create_all() # ADDED: Create session table
 
     if not AdminUser.query.filter_by(username='admin').first():
         default_admin = AdminUser(username='admin')
