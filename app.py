@@ -37,10 +37,13 @@ app.config['SESSION_PERMANENT'] = False # Sessions are not permanent by default 
 app.config['SESSION_COOKIE_SAMESITE'] = 'Lax' # Good default for CSRF protection and cookie sending
 
 # IMPORTANT for Render/Production (HTTPS):
+# Change these two to False for local HTTP testing:
 app.config['SESSION_COOKIE_SECURE'] = True      # Only send session cookie over HTTPS
 app.config['REMEMBER_COOKIE_SECURE'] = True     # For Flask-Login's remember me cookie
 app.config['SESSION_COOKIE_HTTPONLY'] = True    # Prevent client-side JS access to session cookie
-app.config['REMEMBER_COOKIE_HTTPONLY'] = True   # For Flask-Login's remember me cookie
+app.config['REMEMBER_COOKIE_HTTPONLY'] = True   # Prevent client-side JS access to remember me cookie
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'   # Good default for CSRF protection and cookie sending
+app.config['REMEMBER_COOKIE_SAMESITE'] = 'Lax'
 # --- END Flask-Session Config ---
 
 

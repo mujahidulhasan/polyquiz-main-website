@@ -6,8 +6,8 @@ Werkzeug==2.3.7
 python-dotenv==1.0.0
 gunicorn==20.1.0
 psycopg2-binary # For PostgreSQL (remove if only local SQLite)
-pandas==2.2.0
+pandas==2.2.3 # <--- CHANGED THIS LINE
 openpyxl==3.1.2
 email_validator==2.1.1
 cloudinary==1.38.0
-Flask-Session==0.8.0 # <--- ADD THIS LINE
+Flask-Session==0.8.0
