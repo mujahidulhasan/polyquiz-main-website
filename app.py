@@ -15,14 +15,20 @@ load_dotenv()
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_object(Config)
 
+# --- CORRECTED PLACEMENT OF SECRET_KEY ASSIGNMENT ---
+# Explicitly set SECRET_KEY here, immediately after app.config.from_object(Config)
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+# --- END CORRECTED PLACEMENT ---
+
 # --- Explicitly set SQLALCHEMY_DATABASE_URI and SQLALCHEMY_TRACK_MODIFICATIONS ---
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # --- END ADDITION ---
 
 # --- ADDED: Session cookie configuration for local development ---
-app.config['SESSION_COOKIE_SECURE'] = False # Set to True in production (HTTPS)
-app.config['REMEMBER_COOKIE_SECURE'] = False # Set to True in production (HTTPS)
+# Set to True in production (HTTPS on Render)
+app.config['SESSION_COOKIE_SECURE'] = True
+app.config['REMEMBER_COOKIE_SECURE'] = True
 # --- END ADDITION ---
 
 
