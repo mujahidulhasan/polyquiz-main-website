@@ -1,0 +1,24 @@
+{% extends "layout.html" %}
+{% block title %}লগইন{% endblock %}
+{% block content %}
+    <h2>লগইন করুন</h2>
+    <form method="POST" class="form">
+        {{ form.csrf_token }}
+        <p>
+            {{ form.username.label }}<br>
+            {{ form.username(size=32) }}
+            {% for error in form.username.errors %}
+                <span style="color: red;">{{ error }}</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.password.label }}<br>
+            {{ form.password(size=32) }}
+            {% for error in form.password.errors %}
+                <span style="color: red;">{{ error }}</span>
+            {% endfor %}
+        </p>
+        <p>{{ form.submit() }}</p>
+    </form>
+    <p>নতুন ব্যবহারকারী? <a href="{{ url_for('auth.register') }}">রেজিস্টার করুন</a></p>
+{% endblock %}

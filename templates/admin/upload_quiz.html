@@ -1,0 +1,65 @@
+{% extends "admin/admin_layout.html" %}
+{% block title %}প্রশ্ন আপলোড করুন (এক্সেল){% endblock %}
+{% block admin_content %}
+    <h2>প্রশ্ন আপলোড করুন (এক্সেল)</h2>
+    <form method="POST" class="form" enctype="multipart/form-data">
+        {{ form.csrf_token }}
+        <p>
+            {{ form.subject_id.label }}<br>
+            {{ form.subject_id() }}
+            {% for error in form.subject_id.errors %}
+                <span style="color: red;">{{ error }}</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.chapter_id.label }}<br>
+            {{ form.chapter_id() }}
+            {% for error in form.chapter_id.errors %}
+                <span style="color: red;">{{ error }}</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.excel_file.label }}<br>
+            {{ form.excel_file() }}
+            {% for error in form.excel_file.errors %}
+                <span style="color: red;">{{ error }}</span>
+            {% endfor %}
+        </p>
+        <p>{{ form.submit(value='প্রশ্ন আপলোড করুন') }}</p>
+    </form>
+
+    <p>
+        **এক্সেল শীটের ফরম্যাট:**
+        <br>
+        <table class="admin-table" style="font-size: 0.9em;">
+            <thead>
+                <tr>
+                    <th>কলাম ১</th>
+                    <th>কলাম ২</th>
+                    <th>কলাম ৩</th>
+                    <th>কলাম ৪</th>
+                    <th>কলাম ৫</th>
+                    <th>কলাম ৬</th>
+                    <th>কলাম ৭</th>
+                    <th>কলাম ৮</th>
+                    <th>কলাম ৯</th>
+                    <th>কলাম ১০ (ঐচ্ছিক)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>কুইজ নাম্বার</td>
+                    <td>প্রশ্ন</td>
+                    <td>অপশন ১</td>
+                    <td>অপশন ২</td>
+                    <td>অপশন ৩</td>
+                    <td>অপশন ৪</td>
+                    <td>সঠিক অপশন নাম্বার (1, 2, 3, or 4)</td>
+                    <td>নেগেটিভ মার্ক (যেমন: 0.25)</td>
+                    <td>পয়েন্ট (সঠিক উত্তরের জন্য)</td>
+                    <td>ভিডিও/ছবি লিঙ্ক</td>
+                </tr>
+            </tbody>
+        </table>
+    </p>
+{% endblock %}

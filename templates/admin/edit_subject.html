@@ -1,0 +1,23 @@
+{% extends "admin/admin_layout.html" %}
+{% block title %}বিষয় এডিট করুন{% endblock %}
+{% block admin_content %}
+    <h2>বিষয় এডিট করুন: {{ subject.name }}</h2>
+    <form method="POST" class="form">
+        {{ form.csrf_token }}
+        <p>
+            {{ form.name.label }}<br>
+            {{ form.name(size=32) }}
+            {% for error in form.name.errors %}
+                <span style="color: red;">{{ error }}</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.is_active() }} {{ form.is_active.label }}
+            {% for error in form.is_active.errors %}
+                <span style="color: red;">{{ error }}</span>
+            {% endfor %}
+        </p>
+        <p>{{ form.submit(value='আপডেট করুন') }}</p>
+    </form>
+    <p><a href="{{ url_for('admin.manage_subjects') }}">সকল বিষয় দেখুন</a></p>
+{% endblock %}

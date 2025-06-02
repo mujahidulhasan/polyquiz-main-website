@@ -1,0 +1,23 @@
+{% extends "admin/admin_layout.html" %}
+{% block title %}সাইট সেটিংস{% endblock %}
+{% block admin_content %}
+    <h2>সাইট সেটিংস</h2>
+    <form method="POST" class="form">
+        {{ form.csrf_token }}
+        <p>
+            {{ form.homepage_notice.label }}<br>
+            {{ form.homepage_notice() }}
+            {% for error in form.homepage_notice.errors %}
+                <span style="color: red;">{{ error }}</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.theme_setting.label }}<br>
+            {{ form.theme_setting() }}
+            {% for error in form.theme_setting.errors %}
+                <span style="color: red;">{{ error }}</span>
+            {% endfor %}
+        </p>
+        <p>{{ form.submit(value='সেটিংস সেভ করুন') }}</p>
+    </form>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+{% block title %}আমার প্রোফাইল{% endblock %}
+{% block content %}
+    <h2>স্বাগতম, {{ current_user.username }}!</h2>
+    <p>আপনার বর্তমান লেভেল: {{ current_user.current_level }}</p>
+    <p>মোট পয়েন্ট: {{ current_user.total_points }}</p>
+    <p>আপনার নির্বাচিত ক্লাস: {{ current_user.selected_class or 'নির্বাচন করা হয়নি' }}</p>
+
+    <h3>আপনার ক্লাসের জন্য উপলব্ধ বিষয়সমূহ:</h3>
+    {% if user_subjects %}
+        <ul>
+            {% for subject in user_subjects %}
+                <li>
+                    <h4>{{ subject.name }}</h4>
+                    <ul>
+                        {% for chapter in user_chapters %}
+                            {% if chapter.subject_id == subject.id %}
+                                <li>{{ chapter.name }} (ক্লাস: {{ chapter.for_class }}) <a href="#">কুইজ খেলুন</a></li> {# Link to quiz play route #}
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>আপনার ক্লাসের জন্য কোনো বিষয় বা অধ্যায় উপলব্ধ নেই।</p>
+    {% endif %}
+
+    {% endblock %}

@@ -1,0 +1,37 @@
+{% extends "admin/admin_layout.html" %}
+{% block title %}অধ্যায় এডিট করুন{% endblock %}
+{% block admin_content %}
+    <h2>অধ্যায় এডিট করুন: {{ chapter.name }}</h2>
+    <form method="POST" class="form">
+        {{ form.csrf_token }}
+        <p>
+            {{ form.name.label }}<br>
+            {{ form.name(size=32) }}
+            {% for error in form.name.errors %}
+                <span style="color: red;">{{ error }}</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.subject_id.label }}<br>
+            {{ form.subject_id() }}
+            {% for error in form.subject_id.errors %}
+                <span style="color: red;">{{ error }}</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.for_class.label }}<br>
+            {{ form.for_class() }}
+            {% for error in form.for_class.errors %}
+                <span style="color: red;">{{ error }}</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.is_active() }} {{ form.is_active.label }}
+            {% for error in form.is_active.errors %}
+                <span style="color: red;">{{ error }}</span>
+            {% endfor %}
+        </p>
+        <p>{{ form.submit(value='আপডেট করুন') }}</p>
+    </form>
+    <p><a href="{{ url_for('admin.manage_chapters') }}">সকল অধ্যায় দেখুন</a></p>
+{% endblock %}

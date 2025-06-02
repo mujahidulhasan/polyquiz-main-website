@@ -1,0 +1,42 @@
+body.dark-mode {
+    background-color: #212121;
+    color: #e0e0e0;
+}
+body.dark-mode header {
+    background-color: #333;
+}
+body.dark-mode header .logo {
+    color: #e0e0e0;
+}
+body.dark-mode nav ul li a {
+    color: #e0e0e0;
+}
+body.dark-mode main {
+    background-color: #303030;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+}
+body.dark-mode .notice-bar {
+    background-color: #5a5a5a;
+    color: #f0f0f0;
+}
+body.dark-mode form label {
+    color: #e0e0e0;
+}
+body.dark-mode form input[type="text"], body.dark-mode form input[type="password"],
+body.dark-mode form input[type="email"], body.dark-mode form select, body.dark-mode form textarea {
+    background-color: #424242;
+    border-color: #555;
+    color: #e0e0e0;
+}
+body.dark-mode form button[type="submit"] {
+    background-color: #0056b3;
+}
+body.dark-mode footer {
+    background-color: #111;
+    color: #ccc;
+}
+body.dark-mode .theme-toggle button {
+    border-color: #e0e0e0;
+    color: #e0e0e0;
+}
+/* Add dark mode styles for specific sections like quiz, admin panel */

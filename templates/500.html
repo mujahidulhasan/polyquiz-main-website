@@ -1,0 +1,9 @@
+{% extends "layout.html" %}
+{% block title %}সার্ভার ত্রুটি{% endblock %}
+{% block content %}
+    <div style="text-align: center; padding: 50px;">
+        <h1>500 - দুঃখিত, সার্ভারে একটি সমস্যা হয়েছে!</h1>
+        <p>আমরা এই সমস্যার সমাধানের জন্য কাজ করছি। অনুগ্রহ করে কিছুক্ষণ পর আবার চেষ্টা করুন।</p>
+        <p><a href="{{ url_for('index') }}">হোমপেজে ফিরে যান</a></p>
+    </div>
+{% endblock %}

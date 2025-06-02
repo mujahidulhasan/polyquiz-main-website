@@ -1,0 +1,49 @@
+{% extends "admin/admin_layout.html" %}
+{% block title %}বিষয় ম্যানেজ করুন{% endblock %}
+{% block admin_content %}
+    <h2>বিষয় ম্যানেজ করুন</h2>
+    <form method="POST" class="form">
+        {{ form.csrf_token }}
+        <p>
+            {{ form.name.label }}<br>
+            {{ form.name(size=32) }}
+            {% for error in form.name.errors %}
+                <span style="color: red;">{{ error }}</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.is_active() }} {{ form.is_active.label }}
+            {% for error in form.is_active.errors %}
+                <span style="color: red;">{{ error }}</span>
+            {% endfor %}
+        </p>
+        <p>{{ form.submit(value='নতুন বিষয় যোগ করুন') }}</p>
+    </form>
+
+    <h3>বিদ্যমান বিষয়সমূহ:</h3>
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>নাম</th>
+                <th>সক্রিয়</th>
+                <th>অ্যাকশন</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for subject in subjects %}
+                <tr>
+                    <td>{{ subject.id }}</td>
+                    <td>{{ subject.name }}</td>
+                    <td>{% if subject.is_active %}হ্যাঁ{% else %}না{% endif %}</td>
+                    <td class="actions">
+                        <a href="{{ url_for('admin.edit_subject', subject_id=subject.id) }}" class="edit">এডিট</a>
+                        <form method="POST" action="{{ url_for('admin.delete_subject', subject_id=subject.id) }}" style="display: inline-block;">
+                            <input type="submit" value="মুছে ফেলুন" class="delete" onclick="return confirm('আপনি কি নিশ্চিত যে আপনি এই বিষয় এবং এর অন্তর্গত সকল অধ্যায় ও প্রশ্ন মুছে ফেলতে চান?');">
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
