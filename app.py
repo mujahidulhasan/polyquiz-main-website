@@ -21,7 +21,7 @@ load_dotenv()
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_object(Config)
 
-# --- Explicitly set SECRET_KEY ---
+# --- Explicitly set SECRET_KEY (Crucial for Flask-WTF and Sessions) ---
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 logger.info(f"App SECRET_KEY loaded (length: {len(app.config['SECRET_KEY']) if app.config['SECRET_KEY'] else 'None'})")
 
@@ -29,31 +29,32 @@ logger.info(f"App SECRET_KEY loaded (length: {len(app.config['SECRET_KEY']) if a
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-# --- ADDED: Flask-Session configuration for Server-Side Sessions ---
+# --- Flask-Session configuration for Server-Side Sessions ---
 app.config['SESSION_TYPE'] = 'sqlalchemy' # Store sessions in SQLAlchemy database
 app.config['SESSION_SQLALCHEMY'] = db # Use our existing SQLAlchemy database instance
 app.config['SESSION_USE_SIGNER'] = True # Sign the session ID cookie for security
 app.config['SESSION_PERMANENT'] = False # Sessions are not permanent by default (cleared on browser close)
-app.config['SESSION_COOKIE_SAMESITE'] = 'Lax' # Good default for CSRF protection
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax' # Good default for CSRF protection and cookie sending
 
 # IMPORTANT for Render/Production (HTTPS):
 app.config['SESSION_COOKIE_SECURE'] = True      # Only send session cookie over HTTPS
 app.config['REMEMBER_COOKIE_SECURE'] = True     # For Flask-Login's remember me cookie
 app.config['SESSION_COOKIE_HTTPONLY'] = True    # Prevent client-side JS access to session cookie
 app.config['REMEMBER_COOKIE_HTTPONLY'] = True   # For Flask-Login's remember me cookie
-# --- END ADDITION ---
+# --- END Flask-Session Config ---
 
 
-# Ensure local upload folder exists if local testing
+# Ensure local upload folder exists (for temporary file storage before Cloudinary upload)
 if not os.path.exists(os.path.join(app.root_path, app.config['UPLOAD_FOLDER'])):
     os.makedirs(os.path.join(app.root_path, app.config['UPLOAD_FOLDER']))
 
 # Initialize extensions
 init_db(app) # Initialize SQLAlchemy
-init_cloudinary(app) # Initialize Cloudinary (requires CLOUDINARY_CLOUD_NAME etc. in .env)
+init_cloudinary(app) # Initialize Cloudinary
 
 # Initialize Flask-Session AFTER db is initialized
 server_session = Session(app) # ADDED: Initialize Flask-Session
+
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -108,17 +109,18 @@ app.register_blueprint(user_bp, url_prefix='/user')
 app.register_blueprint(admin_bp, url_prefix='/admin')
 
 # --- Database Initialization and Initial Data Setup ---
+# This block runs when the app context is available (e.g., during app startup)
 with app.app_context():
-    # Flask-Session needs its table created explicitly
-    db.create_all() # Create all application tables
-    server_session.create_all() # ADDED: Create session table
+    db.create_all() # Create all application tables (including models.py tables)
+    # server_session.create_all() is NOT needed here. Flask-Session automatically creates its table.
+    # We removed this line as it caused an AttributeError.
 
     if not AdminUser.query.filter_by(username='admin').first():
         default_admin = AdminUser(username='admin')
-        default_admin.set_password('QizMaker*001%')
+        default_admin.set_password('QizMaker*001%') # **SET YOUR ADMIN PASSWORD HERE. CHANGE IT TO A SECURE ONE!**
         db.session.add(default_admin)
         db.session.commit()
-        logger.info("Default admin user 'admin' created. **CHANGE PASSWORD IMMEDIATELY!**")
+        logger.info("Default admin user 'admin' created. **CHANGE PASSWORD IMMEDIATELY AFTER FIRST LOGIN!**")
 
     if not SiteSetting.query.filter_by(setting_key='homepage_notice').first():
         db.session.add(SiteSetting(setting_key='homepage_notice', setting_value=''))
