@@ -6,8 +6,8 @@ from database import db, init_db
 from models import User, AdminUser, Subject, Chapter, QuizQuestion, SiteSetting
 from utils.file_upload_handler import init_cloudinary
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user, UserMixin
-from werkzeug.security import generate_password_hash
-from datetime import datetime
+from werkzeug.security import generate_password_hash # For initial admin user
+from datetime import datetime # For datetime.now().year in templates
 import logging # ADDED: Import logging
 
 # --- Setup logging ---
