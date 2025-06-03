@@ -1,24 +1,35 @@
+{# polyquiz/templates/index.html #}
 {% extends "layout.html" %}
 
 {% block title %}হোম{% endblock %}
 
 {% block content %}
-    <h2>বিষয় নির্বাচন করুন</h2>
-    <div class="subject-list">
-        {% if subjects %}
-            {% for subject in subjects %}
-                <div class="subject-card">
-                    <h3>{{ subject.name }}</h3>
-                    {# Link to chapters within this subject. This route needs to be created in user_routes.py #}
-                    <a href="{{ url_for('index') }}?subject_id={{ subject.id }}" class="button">কুইজ শুরু করুন</a> 
-                </div>
-            {% endfor %}
-        {% else %}
-            <p>কোনো বিষয় উপলব্ধ নেই। অ্যাডমিন প্যানেল থেকে বিষয় যোগ করুন।</p>
-        {% endif %}
-    </div>
-    <div class="search-section">
-        <input type="text" id="quizSearch" placeholder="কুইজের বিষয় বা অধ্যায় খুঁজুন...">
-        <button>সার্চ</button>
-    </div>
+    <section class="subject-selection-section">
+        <div class="section-title-box"> {# Box for the title #}
+            <h2 class="section-title">কুইজের বিষয় নির্বাচন করুন</h2>
+        </div>
+        
+        <div class="subject-grid">
+            {% if subjects %}
+                {% for subject in subjects %}
+                    <a href="{{ url_for('user.select_chapter', subject_id=subject.id) }}" class="subject-card-link"> {# Make entire card clickable #}
+                        <div class="subject-card">
+                            <div class="subject-icon-area">
+                                {% if subject.image_url %}
+                                    <img src="{{ subject.image_url }}" alt="{{ subject.name }} Icon" class="subject-icon">
+                                {% else %}
+                                    <img src="{{ url_for('static', filename='images/default_subject_icon.png') }}" alt="Default Icon" class="subject-icon"> 
+                                {% endif %}
+                            </div>
+                            <div class="subject-name-area">
+                                <h3>{{ subject.name }}</h3>
+                            </div>
+                        </div>
+                    </a>
+                {% endfor %}
+            {% else %}
+                <p class="no-content-message">কোনো বিষয় উপলব্ধ নেই। অ্যাডমিন প্যানেল থেকে বিষয় যোগ করুন।</p>
+            {% endif %}
+        </div>
+    </section>
 {% endblock %}

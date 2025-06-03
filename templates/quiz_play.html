@@ -1,0 +1,200 @@
+{# polyquiz/templates/quiz_play.html #}
+{% extends "layout.html" %}
+{% block title %}{{ chapter.name }} - কুইজ খেলুন{% endblock %}
+{% block content %}
+    <h2>{{ chapter.name }} - কুইজ খেলুন</h2>
+    <div id="quiz-container">
+        <div id="question-display" style="border: 1px solid #ccc; padding: 20px; margin-bottom: 20px; border-radius: 8px;">
+            <h3 id="question-number"></h3>
+            <p id="question-text"></p>
+            <div id="media-display" style="margin-bottom: 15px; text-align: center;">
+                </div>
+            <div id="options-container">
+                </div>
+            {% if current_user.is_authenticated %}
+                <p>আপনার মোট পয়েন্ট: <span id="user-total-points">{{ current_user.total_points | round(2) }}</span></p>
+                <p>বর্তমান লেভেল: <span id="user-current-level">{{ current_user.current_level }}</span></p>
+            {% endif %}
+        </div>
+        <div id="quiz-navigation">
+            <button id="next-question-button" class="button" style="padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">পরবর্তী প্রশ্ন</button>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script type="text/javascript">
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get quiz data and current index from Flask session. This is JSON.
+            // Ensure values are properly converted to JSON for JavaScript
+            const quizData = JSON.parse('{{ session.current_quiz | tojson | safe }}'); 
+            let currentQuestionIndex = JSON.parse('{{ session.current_question_index | tojson | safe }}');
+            let userAnswers = JSON.parse('{{ session.user_answers | tojson | safe }}');
+            let currentQuizScore = JSON.parse('{{ session.get("quiz_total_score", 0.0) | tojson | safe }}');
+            
+            const chapterId = JSON.parse('{{ chapter.id | tojson | safe }}'); // Pass chapter ID for JS
+            
+            // Pass current_user data to JavaScript if authenticated
+            const isAuthenticated = {{ current_user.is_authenticated | tojson }};
+            let initialUserTotalPoints = {{ current_user.total_points | default(0.0) | tojson }};
+            let initialUserCurrentLevel = {{ current_user.current_level | default(1) | tojson }};
+
+            const questionNumberDisplay = document.getElementById('question-number');
+            const questionTextDisplay = document.getElementById('question-text');
+            const mediaDisplay = document.getElementById('media-display');
+            const optionsContainer = document.getElementById('options-container');
+            const nextButton = document.getElementById('next-question-button');
+            const userTotalPointsDisplay = document.getElementById('user-total-points');
+            const userCurrentLevelDisplay = document.getElementById('user-current-level');
+
+            function displayQuestion() {
+                if (currentQuestionIndex < quizData.length) {
+                    const question = quizData[currentQuestionIndex];
+                    questionNumberDisplay.textContent = `প্রশ্ন ${currentQuestionIndex + 1} / ${quizData.length}`;
+                    questionTextDisplay.textContent = question.question_text;
+                    optionsContainer.innerHTML = ''; // Clear previous options
+                    mediaDisplay.innerHTML = ''; // Clear previous media
+
+                    // Display media if available
+                    if (question.media_url) {
+                        const fileExtension = question.media_url.split('.').pop().toLowerCase();
+                        if (['png', 'jpg', 'jpeg', 'gif'].includes(fileExtension)) {
+                            mediaDisplay.innerHTML = `<img src="${question.media_url}" alt="Question Media" style="max-width: 100%; height: auto; border-radius: 5px;">`;
+                        } else if (['mp4', 'webm'].includes(fileExtension)) {
+                            mediaDisplay.innerHTML = `<video controls style="max-width: 100%; height: auto; border-radius: 5px;"><source src="${question.media_url}" type="video/${fileExtension}"></video>`;
+                        }
+                    }
+
+                    const options = [question.option1, question.option2, question.option3, question.option4];
+                    options.forEach((optionText, index) => {
+                        const optionDiv = document.createElement('div');
+                        optionDiv.classList.add('quiz-option');
+                        const optionId = `option_${currentQuestionIndex}_${index + 1}`;
+                        optionDiv.innerHTML = `
+                            <input type="radio" id="${optionId}" name="quiz_option" value="${index + 1}" required>
+                            <label for="${optionId}">${optionText}</label>
+                        `;
+                        optionsContainer.appendChild(optionDiv);
+                    });
+
+                    nextButton.textContent = "পরবর্তী প্রশ্ন";
+                    if (currentQuestionIndex === quizData.length - 1) {
+                        nextButton.textContent = "ফলাফল দেখুন"; // Change text on last question
+                    }
+
+                } else {
+                    // End of quiz, redirect to result page
+                    window.location.href = "{{ url_for('user.quiz_result', chapter_id=chapter.id) }}";
+                }
+            }
+
+            nextButton.addEventListener('click', function() {
+                const selectedOption = document.querySelector('input[name="quiz_option"]:checked');
+                let userChoice = selectedOption ? parseInt(selectedOption.value) : null;
+                
+                if (!selectedOption && currentQuestionIndex < quizData.length) {
+                    alert("অনুগ্রহ করে একটি অপশন নির্বাচন করুন।");
+                    return;
+                }
+                
+                const question = quizData[currentQuestionIndex];
+                const isCorrect = (userChoice === question.correct_option_number);
+                
+                let pointsEarnedForThisQuestion = 0.0;
+                if (isCorrect) {
+                    pointsEarnedForThisQuestion = question.point_value;
+                } else if (userChoice !== null) { // Only deduct if an answer was chosen (not skipped/no choice)
+                    pointsEarnedForThisQuestion = -question.negative_mark;
+                }
+
+                currentQuizScore += pointsEarnedForThisQuestion;
+                
+                fetch('{{ url_for('user.save_quiz_progress') }}', { 
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token | safe }}' // Ensure this is correctly passed, no tojson needed for string header
+                    },
+                    body: JSON.stringify({
+                        question_id: question.id,
+                        user_choice: userChoice,
+                        is_correct: isCorrect,
+                        points_earned: pointsEarnedForThisQuestion,
+                        quiz_chapter_id: chapterId,
+                        current_question_index: currentQuestionIndex
+                    })
+                })
+                .then(response => {
+                    // Check if response is ok, otherwise throw error
+                    if (!response.ok) {
+                        return response.json().then(errorData => { 
+                            // Try to get message from errorData, or fall back to generic message
+                            throw new Error(errorData.message || `সার্ভার প্রতিক্রিয়া ত্রুটি: ${response.status} ${response.statusText}`); 
+                        }).catch(() => {
+                            // If response.json() fails, it's not valid JSON, so display raw response text
+                            return response.text().then(text => { 
+                                throw new Error(`সার্ভার থেকে অপ্রত্যাশিত প্রতিক্রিয়া: ${text.substring(0, 100)}... (HTTP ${response.status})`);
+                            });
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.status === 'success') {
+                        console.log('Progress saved:', data.message);
+                        
+                        if (isAuthenticated) { 
+                            if (userTotalPointsDisplay && data.new_total_points !== undefined && data.new_total_points !== null) {
+                                userTotalPointsDisplay.textContent = data.new_total_points.toFixed(2);
+                            }
+                            if (userCurrentLevelDisplay && data.new_level !== undefined && data.new_level !== null) {
+                                userCurrentLevelDisplay.textContent = data.new_level;
+                            }
+                        }
+
+                        if (data.quiz_finished) {
+                            window.location.href = "{{ url_for('user.quiz_result', chapter_id=chapter.id) }}";
+                        } else {
+                            currentQuestionIndex++;
+                            displayQuestion();
+                        }
+                    } else {
+                        console.error('Failed to save progress:', data.message);
+                        alert(`প্রগতি সেভ করতে ত্রুটি হয়েছে: ${data.message}`);
+                    }
+                })
+                .catch(error => {
+                    console.error('Fetch error:', error);
+                    alert(`নেটওয়ার্ক ত্রুটি বা সার্ভার থেকে প্রতিক্রিয়া ত্রুটি: ${error.message}`);
+                });
+            });
+
+            // Initial display
+            displayQuestion();
+        });
+    </script>
+    <style>
+        /* Basic styling for quiz options */
+        .quiz-option {
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #eee;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .quiz-option:hover {
+            background-color: #f9f9f9;
+        }
+        .quiz-option input[type="radio"] {
+            margin-right: 10px;
+        }
+        /* Style for media display */
+        #media-display img, #media-display video {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+            border-radius: 5px;
+        }
+    </style>
+{% endblock %}

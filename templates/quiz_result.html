@@ -1,0 +1,54 @@
+{# polyquiz/templates/quiz_result.html #}
+{% extends "layout.html" %}
+{% block title %}{{ chapter.name }} - ফলাফল{% endblock %}
+{% block content %}
+    <h2>{{ chapter.name }} - কুইজের ফলাফল</h2>
+    
+    <p>আপনি মোট **{{ quiz_total_score | round(2) }}** পয়েন্ট পেয়েছেন ({{ total_questions_attempted }}টি প্রশ্নের মধ্যে)।</p>
+
+    <h3>আপনার উত্তরপত্র:</h3>
+    <div class="answer-sheet" style="border: 1px solid #ddd; padding: 20px; border-radius: 8px;">
+        {% if answer_sheet %}
+            {% for item in answer_sheet %}
+                <div class="question-review" style="margin-bottom: 20px; padding: 15px; border-bottom: 1px dashed #eee;">
+                    <h4>প্রশ্ন {{ loop.index }}: {{ item.question_text }}</h4>
+                    {% if item.media_url %}
+                        <div style="margin-bottom: 10px; text-align: center;">
+                            {% set file_extension = item.media_url.split('.')[-1].lower() %}
+                            {% if file_extension in ['png', 'jpg', 'jpeg', 'gif'] %}
+                                <img src="{{ item.media_url }}" alt="Question Media" style="max-width: 100%; height: auto; border-radius: 5px;">
+                            {% elif file_extension in ['mp4', 'webm'] %}
+                                <video controls style="max-width: 100%; height: auto; border-radius: 5px;"><source src="{{ item.media_url }}" type="video/{{ file_extension }}"></video>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                    <p>আপনার উত্তর: 
+                        {% if item.user_choice %}
+                            **{{ item.options[item.user_choice - 1] }}**
+                        {% else %}
+                            <span style="color: gray;">উত্তর দেওয়া হয়নি</span>
+                        {% endif %}
+                        {% if item.is_correct %}
+                            <span style="color: green; font-weight: bold;"> (সঠিক)</span>
+                        {% else %}
+                            <span style="color: red; font-weight: bold;"> (ভুল)</span>
+                        {% endif %}
+                    </p>
+                    <p>সঠিক উত্তর: **{{ item.correct_option }}**</p>
+                    <p>প্রাপ্ত পয়েন্ট: **{{ item.points_earned | round(2) }}**</p>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>কোনো উত্তরপত্র পাওয়া যায়নি।</p>
+        {% endif %}
+    </div>
+
+    <div class="navigation-buttons" style="margin-top: 30px; text-align: center;">
+        <a href="{{ url_for('user.select_chapter', subject_id=chapter.subject.id) }}" class="button" style="background-color: #007bff; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; margin-right: 15px;">আরও কুইজ খেলুন</a>
+        <button id="share-quiz-button" class="button" style="background-color: #28a745; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">কুইজ শেয়ার করুন</button>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script> {# main.js handles share button #}
+{% endblock %}

@@ -1,7 +1,11 @@
+# polyquiz/forms.py
+
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, TextAreaField, IntegerField, SelectField, BooleanField, FloatField
 from wtforms.validators import DataRequired, Email, EqualTo, Length, NumberRange
-from flask_wtf.file import FileField, FileAllowed # Make sure this is imported
+from flask_wtf.file import FileField, FileAllowed
+
+# from wtforms import FieldList, FormField # এই দুটি এখন আর দরকার নেই, তাই সরিয়ে দেওয়া হয়েছে
 
 class LoginForm(FlaskForm):
     username = StringField('ইউজারনেম', validators=[DataRequired(), Length(min=2, max=80)])
@@ -10,7 +14,7 @@ class LoginForm(FlaskForm):
 
 class RegistrationForm(FlaskForm):
     username = StringField('ইউজারনেম', validators=[DataRequired(), Length(min=2, max=80)])
-    email = StringField('ইমেইল', validators=[DataRequired(), Email()]) # Email validator requires 'email_validator' package
+    email = StringField('ইমেইল', validators=[DataRequired(), Email()])
     password = PasswordField('পাসওয়ার্ড', validators=[DataRequired()])
     confirm_password = PasswordField('পাসওয়ার্ড নিশ্চিত করুন', validators=[DataRequired(), EqualTo('password')])
     selected_class = SelectField('ক্লাস নির্বাচন করুন', choices=[
@@ -22,16 +26,19 @@ class RegistrationForm(FlaskForm):
     ], validators=[DataRequired()])
     submit = SubmitField('রেজিস্টার করুন')
 
+# --- Admin Panel Forms ---
+
 class SubjectForm(FlaskForm):
     name = StringField('বিষয় এর নাম', validators=[DataRequired(), Length(max=100)])
     is_active = BooleanField('সক্রিয় আছে?')
+    image_file = FileField('বিষয় এর আইকন/ছবি আপলোড করুন', validators=[FileAllowed(['png', 'jpg', 'jpeg', 'gif'])])
     submit = SubmitField('সেভ করুন')
 
 class ChapterForm(FlaskForm):
     name = StringField('অধ্যায় এর নাম', validators=[DataRequired(), Length(max=100)])
     subject_id = SelectField('বিষয় নির্বাচন করুন', coerce=int, validators=[DataRequired()])
     for_class = SelectField('ক্লাস নির্বাচন করুন', choices=[
-        ('', 'নির্বাচন করুন'), # Empty default option
+        ('', 'নির্বাচন করুন'),
         ('Class 8', 'অষ্টম শ্রেণি'),
         ('Class 9', 'নবম শ্রেণি'),
         ('Class 10', 'দশম শ্রেণি'),
@@ -39,15 +46,18 @@ class ChapterForm(FlaskForm):
         ('Class 12', 'দ্বাদশ শ্রেণি')
     ], validators=[DataRequired()])
     is_active = BooleanField('সক্রিয় আছে?')
+    image_file = FileField('অধ্যায় এর আইকন/ছবি আপলোড করুন', validators=[FileAllowed(['png', 'jpg', 'jpeg', 'gif'])])
     submit = SubmitField('সেভ করুন')
 
-class QuizUploadForm(FlaskForm):
+# --- Quiz Upload Form (for Excel files) ---
+class QuizUploadForm(FlaskForm): 
     subject_id = SelectField('বিষয় নির্বাচন করুন', coerce=int, validators=[DataRequired()])
     chapter_id = SelectField('অধ্যায় নির্বাচন করুন', coerce=int, validators=[DataRequired()])
     excel_file = FileField('এক্সেল ফাইল আপলোড করুন (.xlsx)', validators=[FileAllowed(['xlsx'])])
     submit = SubmitField('আপলোড করুন')
 
-class QuestionForm(FlaskForm):
+# QuestionForm (if you still need individual question editing routes)
+class QuestionForm(FlaskForm): # For individual question management/editing later
     question_text = TextAreaField('প্রশ্ন', validators=[DataRequired()])
     option1 = StringField('অপশন ১', validators=[DataRequired()])
     option2 = StringField('অপশন ২', validators=[DataRequired()])

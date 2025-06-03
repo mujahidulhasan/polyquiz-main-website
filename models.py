@@ -45,6 +45,7 @@ class Subject(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), unique=True, nullable=False)
     is_active = db.Column(db.Boolean, default=True)
+    image_url = db.Column(db.String(500), nullable=True) # ADDED: For subject icon/image
     chapters = db.relationship('Chapter', backref='subject', lazy=True, cascade="all, delete-orphan")
 
     def __repr__(self):
@@ -56,6 +57,7 @@ class Chapter(db.Model):
     subject_id = db.Column(db.Integer, db.ForeignKey('subject.id'), nullable=False)
     for_class = db.Column(db.String(50), nullable=True) # e.g., 'Class 9', 'Class 10'
     is_active = db.Column(db.Boolean, default=True)
+    image_url = db.Column(db.String(500), nullable=True) # ADDED: For chapter icon/image
     questions = db.relationship('QuizQuestion', backref='chapter', lazy=True, cascade="all, delete-orphan")
 
     def __repr__(self):

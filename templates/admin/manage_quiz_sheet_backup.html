@@ -1,0 +1,268 @@
+{% extends "admin/admin_layout.html" %}
+{% block title %}কুইজ শীট ম্যানেজ করুন{% endblock %}
+{% block admin_content %}
+    <h2>কুইজ শীট ম্যানেজ করুন</h2>
+    <form method="POST" class="form" enctype="multipart/form-data" id="quiz-form">
+        {{ form.csrf_token }} {# This will render the CSRF token input field #}
+
+        <p>
+            {{ form.subject_id.label }}<br>
+            {{ form.subject_id() }}
+            {% for error in form.subject_id.errors %}
+                <span style="color: red;">{{ error }}</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.chapter_id.label }}<br>
+            {{ form.chapter_id() }}
+            {% for error in form.chapter_id.errors %}
+                <span style="color: red;">{{ error }}</span>
+            {% endfor %}
+        </p>
+
+        <h3>প্রশ্নসমূহ:</h3>
+        <div class="question-header-row" style="display: flex; gap: 10px; font-weight: bold; padding-bottom: 5px; border-bottom: 1px solid #ddd; margin-bottom: 10px;">
+            <div style="flex: 0 0 40px;">ক্রম</div>
+            <div style="flex: 3;">প্রশ্ন</div>
+            <div style="flex: 1.5;">অপশন ১</div>
+            <div style="flex: 1.5;">অপশন ২</div>
+            <div style="flex: 1.5;">অপশন ৩</div>
+            <div style="flex: 1.5;">অপশন ৪</div>
+            <div style="flex: 0.8;">সঠিক</div>
+            <div style="flex: 0.8;">নেগেটিভ</div>
+            <div style="flex: 0.8;">পয়েন্ট</div>
+            <div style="flex: 1.5;">মিডিয়া</div>
+            <div style="flex: 1;">স্তর</div>
+            <div style="flex: 0 0 80px;">অ্যাকশন</div>
+        </div>
+
+        <div id="questions-container">
+            {# Iterate through existing questions forms (if any) or min_entries=1 for initial form #}
+            {# loop.index0 gives 0-based index, loop.index gives 1-based #}
+            {% for question_form in form.questions %}
+                <div class="question-entry" data-index="{{ loop.index0 }}" style="border: 1px solid #ccc; padding: 15px; margin-bottom: 15px; border-radius: 5px;">
+                    <h4>প্রশ্ন #<span class="question-number">{{ loop.index }}</span></h4>
+                    <p>
+                        <label for="questions-{{ loop.index0 }}-question_text">প্রশ্ন</label><br>
+                        {{ question_form.question_text(rows=3, class='question-text-input') }}
+                        {% for error in question_form.question_text.errors %}<span style="color: red;">{{ error }}</span>{% endfor %}
+                    </p>
+                    <p>
+                        <label for="questions-{{ loop.index0 }}-option1">অপশন ১</label><br>
+                        {{ question_form.option1(class='option-input') }}
+                        {% for error in question_form.option1.errors %}<span style="color: red;">{{ error }}</span>{% endfor %}
+                    </p>
+                    <p>
+                        <label for="questions-{{ loop.index0 }}-option2">অপশন ২</label><br>
+                        {{ question_form.option2(class='option-input') }}
+                        {% for error in question_form.option2.errors %}<span style="color: red;">{{ error }}</span>{% endfor %}
+                    </p>
+                    <p>
+                        <label for="questions-{{ loop.index0 }}-option3">অপশন ৩</label><br>
+                        {{ question_form.option3() }}
+                        {% for error in question_form.option3.errors %}<span style="color: red;">{{ error }}</span>{% endfor %}
+                    </p>
+                    <p>
+                        <label for="questions-{{ loop.index0 }}-option4">অপশন ৪</label><br>
+                        {{ question_form.option4() }}
+                        {% for error in question_form.option4.errors %}<span style="color: red;">{{ error }}</span>{% endfor %}
+                    </p>
+                    <p>
+                        <label for="questions-{{ loop.index0 }}-correct_option_number">সঠিক অপশন</label><br>
+                        {{ question_form.correct_option_number() }}
+                        {% for error in question_form.correct_option_number.errors %}<span style="color: red;">{{ error }}</span>{% endfor %}
+                    </p>
+                    <p>
+                        <label for="questions-{{ loop.index0 }}-negative_mark">নেগেটিভ মার্ক</label><br>
+                        {{ question_form.negative_mark() }}
+                        {% for error in question_form.negative_mark.errors %}<span style="color: red;">{{ error }}</span>{% endfor %}
+                    </p>
+                    <p>
+                        <label for="questions-{{ loop.index0 }}-point_value">পয়েন্ট ভ্যালু</label><br>
+                        {{ question_form.point_value() }}
+                        {% for error in question_form.point_value.errors %}<span style="color: red;">{{ error }}</span>{% endfor %}
+                    </p>
+                    <p>
+                        <label for="questions-{{ loop.index0 }}-media_file">ছবি/ভিডিও আপলোড করুন</label><br>
+                        {{ question_form.media_file() }}
+                        {% for error in question_form.media_file.errors %}<span style="color: red;">{{ error }}</span>{% endfor %}
+                    </p>
+                    <p>
+                        <label for="questions-{{ loop.index0 }}-difficulty">কঠিনতার স্তর</label><br>
+                        <select id="questions-{{ loop.index0 }}-difficulty" name="questions-{{ loop.index0 }}-difficulty">
+                            <option value="সহজ">সহজ</option>
+                            <option value="কঠিন">কঠিন</option>
+                            <option value="অধিক কঠিন">অধিক কঠিন</option>
+                        </select>
+                    </p>
+                    <button type="button" class="remove-question-button" style="background-color: #dc3545; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer;">প্রশ্নটি সরান</button>
+                </div>
+            {% endfor %}
+        </div>
+        
+        <button type="button" id="add-question-button" style="background-color: #28a745; color: white; border: none; padding: 10px 15px; margin-top: 20px; border-radius: 5px; cursor: pointer;">+ নতুন প্রশ্ন যোগ করুন</button>
+        <p style="margin-top: 20px;">{{ form.submit(value='প্রশ্নসমূহ সেভ করুন') }}</p>
+    </form>
+{% endblock %}
+
+{% block scripts %}
+    <script type="text/javascript">
+        document.addEventListener('DOMContentLoaded', function() {
+            const container = document.getElementById('questions-container');
+            const addButton = document.getElementById('add-question-button');
+            const quizForm = document.getElementById('quiz-form'); 
+
+            // Function to update question numbers (e.g., Question #1, Question #2)
+            function updateQuestionNumbers() {
+                const questionEntries = container.querySelectorAll('.question-entry');
+                questionEntries.forEach((entry, index) => {
+                    entry.querySelector('.question-number').textContent = index + 1;
+                });
+            }
+
+            // Function to attach remove button listener to a new button
+            function addRemoveButtonListener(button) {
+                if (!button || typeof button.closest !== 'function') {
+                    console.error("Error: Remove button is not a valid element or closest() is missing.");
+                    return; 
+                }
+
+                button.addEventListener('click', function() {
+                    const questionEntries = container.querySelectorAll('.question-entry');
+                    if (questionEntries.length > 1) { 
+                        button.closest('.question-entry').remove();
+                        updateQuestionNumbers(); 
+                        updateFormIndexes(); 
+                    } else {
+                        alert("কমপক্ষে একটি প্রশ্ন থাকতে হবে।");
+                    }
+                });
+            }
+
+            // Function to re-index form field names and IDs after removal
+            function updateFormIndexes() {
+                const questionEntries = container.querySelectorAll('.question-entry');
+                questionEntries.forEach((entry, index) => {
+                    entry.dataset.index = index; 
+
+                    entry.querySelectorAll('[name],[id],[for]').forEach(element => { 
+                        // CRITICAL FIX: Explicitly skip csrf_token field from re-indexing
+                        if (element.name === 'csrf_token' || element.id === 'csrf_token' || element.htmlFor === 'csrf_token') {
+                            return; // Do NOT modify the csrf_token field
+                        }
+                        
+                        // Determine original attribute value and type
+                        // Only process elements that are part of the dynamic question fields (names starting with 'questions-')
+                        if (element.name && element.name.startsWith('questions-')) {
+                            element.name = element.name.replace(/questions-\d+-/, `questions-${index}-`);
+                        }
+                        if (element.id && element.id.startsWith('questions-')) {
+                            element.id = element.id.replace(/questions-\d+-/, `questions-${index}-`);
+                        }
+                        if (element.tagName === 'LABEL' && element.htmlFor && element.htmlFor.startsWith('questions-')) {
+                            element.htmlFor = element.htmlFor.replace(/questions-\d+-/, `questions-${index}-`);
+                        }
+                        // For other elements not matched by startswith 'questions-', do not modify their names/ids
+                        // (e.g., subject_id, chapter_id, submit button are outside question-entry div)
+                    });
+                });
+            }
+
+            // Get the current highest index for new questions
+            function getNextIndex() {
+                const existingEntries = container.querySelectorAll('.question-entry');
+                let maxIndex = -1;
+                existingEntries.forEach(entry => {
+                    const index = parseInt(entry.dataset.index);
+                    if (!isNaN(index) && index > maxIndex) {
+                        maxIndex = index;
+                    }
+                });
+                return maxIndex + 1;
+            }
+
+            // The HTML template for a new question form entry
+            // It uses a placeholder '__prefix__' that will be replaced by JS
+            const questionTemplate = `
+                <div class="question-entry" data-index="__prefix__" style="display: flex; gap: 10px; border: 1px solid #eee; padding: 10px; margin-bottom: 10px; border-radius: 5px; align-items: flex-start;">
+                    <div class="field-col q-number-col" style="flex: 0 0 40px; padding-top: 5px;"><h4>প্রশ্ন #<span class="question-number"></span></h4></div>
+                    
+                    <div class="field-col" style="flex: 3 0 200px;">
+                        <label for="questions-__prefix__-question_text">প্রশ্ন</label><br>
+                        <textarea id="questions-__prefix__-question_text" name="questions-__prefix__-question_text" rows="3" placeholder="প্রশ্ন"></textarea>
+                    </p>
+                    <div class="field-col" style="flex: 1.5 0 100px;">
+                        <label for="questions-__prefix__-option1">অপশন ১</label><br>
+                        <input id="questions-__prefix__-option1" name="questions-__prefix__-option1" type="text" value="" placeholder="অপশন ১">
+                    </div>
+                    <div class="field-col" style="flex: 1.5 0 100px;">
+                        <label for="questions-__prefix__-option2">অপশন ২</label><br>
+                        <input id="questions-__prefix__-option2" name="questions-__prefix__-option2" type="text" value="" placeholder="অপশন ২">
+                    </div>
+                    <div class="field-col" style="flex: 1.5 0 100px;">
+                        <label for="questions-__prefix__-option3">অপশন ৩</label><br>
+                        <input id="questions-__prefix__-option3" name="questions-__prefix__-option3" type="text" value="" placeholder="অপশন ৩">
+                    </div>
+                    <div class="field-col" style="flex: 1.5 0 100px;">
+                        <label for="questions-__prefix__-option4">অপশন ৪</label><br>
+                        <input id="questions-__prefix__-option4" name="questions-__prefix__-option4" type="text" value="" placeholder="অপশন ৪">
+                    </div>
+                    <div class="field-col" style="flex: 0.8 0 70px;">
+                        <label for="questions-__prefix__-correct_option_number">সঠিক</label><br>
+                        <select id="questions-__prefix__-correct_option_number" name="questions-__prefix__-correct_option_number">
+                            <option value="1">১</option>
+                            <option value="2">২</option>
+                            <option value="3">৩</option>
+                            <option value="4">৪</option>
+                        </select>
+                    </div>
+                    <div class="field-col" style="flex: 0.8 0 70px;">
+                        <label for="questions-__prefix__-negative_mark">নেগেটিভ</label><br>
+                        <input id="questions-__prefix__-negative_mark" name="questions-__prefix__-negative_mark" type="number" step="0.01" value="0.0">
+                    </div>
+                    <div class="field-col" style="flex: 0.8 0 70px;">
+                        <label for="questions-__prefix__-point_value">পয়েন্ট</label><br>
+                        <input id="questions-__prefix__-point_value" name="questions-__prefix__-point_value" type="number" step="0.01" value="1.0">
+                    </div>
+                    <div class="field-col" style="flex: 1.5 0 120px;">
+                        <label for="questions-__prefix__-media_file">মিডিয়া</label><br>
+                        <input id="questions-__prefix__-media_file" name="questions-__prefix__-media_file" type="file">
+                    </div>
+                    <div class="field-col" style="flex: 1 0 100px;">
+                        <label for="questions-__prefix__-difficulty">স্তর</label><br>
+                        <select id="questions-__prefix__-difficulty" name="questions-__prefix__-difficulty">
+                            <option value="সহজ">সহজ</option>
+                            <option value="কঠিন">কঠিন</option>
+                            <option value="অধিক কঠিন">অধিক কঠিন</option>
+                        </select>
+                    </div>
+                    <div class="field-col action-col" style="flex: 0 0 80px; padding-top: 20px;">
+                        <button type="button" class="remove-question-button" style="background-color: #dc3545; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer;">মুছুন</button>
+                    </div>
+                </div>
+            `;
+                
+                // Create a temporary div to parse the HTML string
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = newEntryHTML;
+                const newEntryElement = tempDiv.firstElementChild; // Get the actual div element
+                
+                // Append the new element to the container
+                container.appendChild(newEntryElement);
+                
+                updateQuestionNumbers(); // Update numbers
+                addRemoveButtonListener(newEntryElement.querySelector('.remove-question-button')); // Attach listener to new button
+                updateFormIndexes(); // Re-index all forms, including the new one
+            });
+
+            // Attach listeners to initially rendered remove buttons (if min_entries > 0)
+            container.querySelectorAll('.remove-question-button').forEach(button => {
+                addRemoveButtonListener(button);
+            });
+
+            // Initial call to set correct numbers and indexes on page load
+            updateQuestionNumbers();
+            updateFormIndexes(); // Call initially to set data-index and re-index initial elements if needed
+        });
+    </script>
+{% endblock %}

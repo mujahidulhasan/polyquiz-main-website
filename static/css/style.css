@@ -1,56 +1,271 @@
-body {
-    font-family: 'Noto Sans Bengali', Arial, sans-serif; /* Use Bengali font */
+/* polyquiz/static/css/style.css */
+
+/* --- Fonts --- */
+@font-face {
+    font-family: 'Hind Siliguri';
+    src: url('../fonts/HindSiliguri-Regular.ttf') format('truetype'),
+         url('../fonts/HindSiliguri-Regular.woff2') format('woff2'); 
+    font-weight: 400; /* Regular */
+    font-style: normal;
+}
+@font-face {
+    font-family: 'Hind Siliguri';
+    src: url('../fonts/HindSiliguri-Bold.ttf') format('truetype'),
+         url('../fonts/HindSiliguri-Bold.woff2') format('woff2'); 
+    font-weight: 700; /* Bold */
+    font-style: normal;
+}
+@font-face {
+    font-family: 'Roboto Condensed';
+    src: url('../fonts/Roboto_Condensed-Regular.ttf') format('truetype'),
+         url('../fonts/Roboto_Condensed-Regular.woff2') format('woff2'); /* Ensure woff2 is also linked if available */
+    font-weight: 400; /* Regular */
+    font-style: normal;
+}
+@font-face {
+    font-family: 'Roboto Condensed';
+    src: url('../fonts/Roboto_Condensed-Bold.ttf') format('truetype'),
+         url('../fonts/Roboto_Condensed-Bold.woff2') format('woff2'); /* Ensure woff2 is also linked if available */
+    font-weight: 700; /* Bold */
+    font-style: normal;
+}
+
+/* --- Colors (60-30-10 Rule Suggestion) --- */
+/* 60% Primary (Backgrounds, main text) */
+:root {
+    --primary-bg: #FFFFFF; /* Pure White */
+    --primary-text: #333333; /* For main text */
+    --primary-border: #E0E0E0; /* Light borders */
+    
+    /* 30% Secondary (Accents, buttons, header, specific sections) */
+    --secondary-blue: #007bff; /* Main button/header blue */
+    --secondary-dark-blue: #0056b3; /* Darker blue for hover/hero */
+    --secondary-green: #28a745; /* Success/Add button green */
+    --secondary-dark-green: #218838;
+    
+    /* 10% Accent (Highlights, warnings, alerts) */
+    --accent-sky-blue: #37C9FF; /* From your design: header top bar, card accents */
+    --accent-orange: #ffc107; /* Warning yellow */
+    --accent-red: #dc3545; /* Danger/Delete red */
+    --accent-dark-gray: #495057; /* Admin sidebar/dark elements */
+    --accent-light-gray: #f8f9fa; /* Light background for some sections */
+}
+
+/* --- Base Styles --- */
+html, body {
+    height: 100%; /* For sticky footer */
     margin: 0;
     padding: 0;
-    background-color: #f0f2f5;
-    color: #333;
+}
+body {
+    font-family: 'Hind Siliguri', 'Roboto Condensed', Arial, sans-serif;
+    background-color: var(--primary-bg); /* Overall white background */
+    color: var(--primary-text);
     line-height: 1.6;
+    display: flex; /* For sticky footer */
+    flex-direction: column; /* For sticky footer */
+    min-height: 100vh; /* For sticky footer */
 }
 .container {
-    max-width: 1000px;
+    max-width: 1200px; /* Increased max-width for better layout */
     margin: 0 auto;
     padding: 0 20px;
 }
+
+/* --- Header --- */
 header {
-    background-color: #007bff;
+    background-color: var(--accent-sky-blue) !important; /* IMPORTANT: Ensure header color doesn't change with theme */
     color: white;
     padding: 1em 0;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+header .header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    flex-wrap: wrap; /* Allow wrapping on smaller screens */
 }
 header .logo {
     font-size: 1.8em;
     font-weight: bold;
     color: white;
     text-decoration: none;
+    padding-left: 0; 
+    display: flex; /* For logo and text alignment */
+    align-items: center;
 }
-nav ul {
+.site-logo { /* Style for the new logo image */
+    height: 40px; /* Adjust as needed */
+    width: auto;
+    margin-right: 10px; /* Space between logo image and text */
+}
+
+/* Header Search Bar */
+.header-search-bar {
+    display: flex;
+    align-items: center;
+    flex-grow: 1; 
+    max-width: 400px; 
+    margin: 0 20px; 
+    position: relative; /* For search icon positioning */
+}
+.header-search-bar .search-input {
+    width: 100%;
+    padding: 8px 15px;
+    padding-right: 40px; /* Space for icon */
+    border: 1px solid rgba(255,255,255,0.5); 
+    border-radius: 25px;
+    background-color: white; /* Search box inner part white */
+    color: var(--primary-text); /* Text color inside search box */
+    font-size: 0.9em;
+    box-shadow: none;
+    outline: none;
+}
+.header-search-bar .search-input::placeholder {
+    color: #a0a0a0; /* Faded color for placeholder */
+    opacity: 1; /* Ensure placeholder is visible */
+}
+.header-search-bar .search-button {
+    background: none; /* No background for button */
+    border: none;
+    color: var(--secondary-blue); /* Search icon color (theme color) */
+    position: absolute; /* Position icon inside box */
+    right: 15px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: color 0.3s ease;
+}
+.header-search-bar .search-button:hover {
+    color: var(--secondary-dark-blue);
+}
+
+nav.main-nav ul { /* Targeting nav with class main-nav */
     list-style: none;
     padding: 0;
     margin: 0;
     display: flex;
     justify-content: flex-end;
+    align-items: center; /* Align items vertically */
 }
-nav ul li {
-    margin-left: 20px;
+nav.main-nav ul li {
+    margin-left: 10px; /* Adjust spacing between buttons */
 }
-nav ul li a {
+/* General styling for all nav links that are NOT buttons */
+nav.main-nav ul li a:not(.nav-button) { 
     color: white;
-    text-decoration: none;
-    font-weight: bold;
+    text-decoration: none; /* REMOVED UNDERLINE */
+    font-weight: bold; /* MADE BOLD */
+    padding: 5px 0;
+    transition: color 0.3s ease;
+}
+nav.main-nav ul li a:not(.nav-button):hover {
+    color: var(--accent-light-gray);
+}
+/* Login/Register button styles */
+.nav-button {
+    display: inline-block;
+    padding: 8px 15px;
+    border: 2px solid white; /* White border for buttons */
+    border-radius: 30px; /* More rounded as per design */
+    font-size: 1em; /* Adjusted font size */
+    text-align: center;
+    margin-left: 10px; /* Space between buttons */
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+    text-decoration: none !important; /* Ensure no underline */
+    font-weight: bold !important; /* Ensure bold */
+}
+.nav-button:hover {
+    background-color: white;
+    color: var(--secondary-blue); /* Text becomes blue on hover */
+    border-color: white;
+}
+/* Specific styles for Login Button */
+.login-button {
+    background-color: var(--accent-sky-blue); /* Login button background color same as header */
+    color: white; /* Login text color white */
+    border-color: white; /* White border for login */
+}
+.login-button:hover {
+    background-color: white; /* Background becomes white on hover */
+    color: var(--accent-sky-blue); /* Text becomes sky blue on hover */
+    border-color: white;
+}
+/* Specific styles for Register Button */
+.register-button {
+    background-color: white; /* Register button background color white */
+    color: var(--accent-sky-blue); /* Register text color sky blue (header color) */
+    border-color: white; /* White border for register */
+}
+.register-button:hover {
+    background-color: var(--accent-light-gray); /* Lighter on hover */
+    color: var(--secondary-dark-blue);
+    border-color: var(--accent-light-gray); /* Lighter border on hover */
+}
+/* Other buttons */
+.logout-button {
+    background-color: var(--accent-red); /* Logout can be red */
+    color: white;
+    border-color: var(--accent-red);
+}
+.logout-button:hover {
+    background-color: white;
+    color: var(--accent-red);
+}
+.admin-button {
+    background-color: var(--accent-dark-gray); /* Admin button distinct */
+    color: white;
+    border-color: var(--accent-dark-gray);
+}
+.admin-button:hover {
+    background-color: white;
+    color: var(--accent-dark-gray);
+}
+
+/* Icons within buttons/links */
+nav.main-nav ul li a i {
+    margin-right: 5px; /* Space between icon and text */
+}
+.theme-toggle {
+    margin-left: 20px; 
+    padding-right: 0; 
+}
+.theme-toggle button {
+    background: none;
+    border: 1px solid white;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+.theme-toggle button:hover {
+    background-color: rgba(255,255,255,0.2);
+}
+
+/* --- Main Content Area (Layout for individual pages) --- */
+.wrapper { /* Added for sticky footer */
+    flex: 1; /* Allows wrapper to grow and push footer down */
+    display: flex;
+    flex-direction: column;
 }
 main {
-    background-color: white;
+    background-color: var(--primary-bg); /* Ensure main content is also white */
     padding: 30px;
     margin: 20px auto;
     border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    box-shadow: none; /* REMOVED SHADOW */
+    flex-grow: 1; /* Allow main to grow inside wrapper */
 }
 .notice-bar {
-    background-color: #ffc107; /* Warning color */
-    color: #333;
+    background-color: var(--accent-orange);
+    color: var(--primary-text);
     padding: 10px 0;
     text-align: center;
     font-weight: bold;
+    margin-top: -20px; 
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    border-radius: 8px 8px 0 0; 
 }
 .flashes {
     list-style: none;
@@ -65,40 +280,368 @@ main {
 .flashes .success { background-color: #d4edda; color: #155724; }
 .flashes .error, .flashes .danger { background-color: #f8d7da; color: #721c24; }
 .flashes .info { background-color: #d1ecf1; color: #0c5460; }
-/* Form styles */
+
+/* --- Forms (General) --- */
 form label { display: block; margin-bottom: 5px; font-weight: bold; }
-form input[type="text"], form input[type="password"], form input[type="email"], form select, form textarea {
+form input[type="text"], form input[type="password"], form input[type="email"], form select, form textarea, form input[type="number"], form input[type="file"] {
     width: 100%;
     padding: 10px;
     margin-bottom: 15px;
-    border: 1px solid #ddd;
+    border: 1px solid var(--primary-border);
     border-radius: 5px;
     box-sizing: border-box;
+    font-family: 'Hind Siliguri', 'Roboto Condensed', Arial, sans-serif; 
 }
 form button[type="submit"] {
-    background-color: #007bff;
+    background-color: var(--secondary-blue);
     color: white;
     padding: 10px 20px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     font-size: 1em;
+    transition: background-color 0.3s ease;
 }
-/* Day/Night toggle */
-.theme-toggle { margin-left: 20px; }
-.theme-toggle button {
-    background: none;
-    border: 1px solid white;
-    color: white;
-    padding: 5px 10px;
-    border-radius: 5px;
-    cursor: pointer;
+form button[type="submit"]:hover {
+    background-color: var(--secondary-dark-blue);
 }
-/* Footer */
+
+/* --- Footer --- */
 footer {
-    background-color: #333;
+    background-color: var(--secondary-blue); /* Consistent with header */
     color: white;
     text-align: center;
-    padding: 1em 0;
-    margin-top: 30px;
+    padding: 1.5em 0; /* More vertical padding */
+    margin-top: auto; 
+    width: 100%; 
+    box-shadow: 0 -2px 4px rgba(0,0,0,0.1); /* Shadow for footer */
+    position: relative; /* Changed to relative for normal flow */
+    bottom: 0;
+    left: 0;
+    z-index: 100;
+}
+footer .container {
+    padding: 10px 20px;
+}
+footer p {
+    margin: 0; 
+    font-size: 0.9em;
+}
+
+/* --- Admin Panel Specific Styles --- */
+.admin-header { background-color: var(--accent-dark-gray); color: white; padding: 1em; text-align: center; }
+.admin-header h1 { margin: 0; }
+.admin-container { 
+    display: flex; 
+    max-width: 1200px; 
+    margin: 20px auto; 
+    background-color: var(--primary-bg); 
+    border-radius: 8px; 
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1); 
+    min-height: 600px;
+}
+.admin-sidebar { 
+    flex: 0 0 250px; 
+    background-color: var(--accent-dark-gray); 
+    padding: 20px; 
+    border-top-left-radius: 8px; 
+    border-bottom-left-radius: 8px;
+}
+.admin-sidebar ul { list-style: none; padding: 0; margin: 0; }
+.admin-sidebar ul li { margin-bottom: 10px; }
+.admin-sidebar ul li a { 
+    color: var(--accent-light-gray); 
+    text-decoration: none; 
+    display: block; 
+    padding: 8px 10px; 
+    border-radius: 4px; 
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+.admin-sidebar ul li a:hover { background-color: var(--primary-text); color: white;}
+.admin-content { flex-grow: 1; padding: 20px; }
+.admin-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+.admin-table th, .admin-table td { border: 1px solid var(--primary-border); padding: 8px; text-align: left; }
+.admin-table th { background-color: var(--accent-light-gray); }
+.admin-table .actions a, .admin-table .actions button { 
+    margin-right: 5px; padding: 5px 10px; text-decoration: none; border: none; 
+    border-radius: 4px; cursor: pointer; font-size: 0.9em; 
+}
+.admin-table .actions a.edit { background-color: var(--accent-orange); color: var(--primary-text); }
+.admin-table .actions button.delete { background-color: var(--accent-red); color: white; }
+.admin-table .actions button.delete:hover { background-color: #c82333; }
+
+.form { max-width: 800px; margin: 20px auto; padding: 20px; border: 1px solid var(--primary-border); border-radius: 8px;} 
+.form input[type="submit"] { background-color: var(--secondary-green); } /* Admin submit button green */
+.form input[type="submit"]:hover { background-color: var(--secondary-dark-green); }
+
+/* --- Homepage specific styles (based on design) --- */
+.subject-selection-section {
+    text-align: center;
+    margin-top: 8px; /* Space from header */
+    margin-bottom: 40px;
+    padding-top: 20px; /* Adjust padding-top here as needed to move content down */
+}
+.section-title-box { /* For "কুইজের বিষয় নির্বাচন করুন" */
+    display: flex; 
+    justify-content: center;
+    align-items: center;
+    padding: 10px 30px;
+    border: 3px solid var(--accent-sky-blue);
+    border-radius: 50px; 
+    margin: 0 auto 30px auto; 
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    background-color: var(--primary-bg); 
+    
+    width: 230px; /* Fixed width as requested */
+    height: 35px; /* Fixed height as requested */
+    max-width: 90%; 
+}
+.section-title { 
+    font-size: 20px; /* Text size 36px as requested */
+    color: var(--accent-sky-blue); 
+    margin: 0; 
+    padding: 0; 
+    line-height: 1.2em; /* Ensure text fits vertically */
+}
+
+.subject-grid {
+    display: grid;
+    /* 5 columns for desktop */
+    grid-template-columns: repeat(5, minmax(190px, 1fr)); /* Adjusted min-width for 5 columns */
+    gap: 40px; 
+    padding: 0 20px; 
+    justify-content: center; 
+    max-width: 1200px; /* Ensure it doesn't exceed container width */
+    margin: 0 auto; 
+}
+.subject-card-link { /* Make entire card clickable */
+    text-decoration: none;
+    color: inherit; 
+    display: contents; /* Allows grid items to stretch, but link itself doesn't take space */
+}
+.subject-card {
+    background-color: var(--primary-bg);
+    border: 3px solid var(--accent-sky-blue); 
+    border-radius: 20px; 
+    padding: 0; 
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    overflow: hidden; 
+    width: 100%; /* Take full width of grid cell */
+    height: 230px; /* Fixed height as requested */
+    cursor: pointer; 
+}
+.subject-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+.subject-icon-area {
+    width: 100%;
+    flex-grow: 1; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px; 
+    background-color: white; 
+}
+.subject-icon {
+    max-width: 80%;
+    max-height: 120px; 
+    object-fit: contain;
+}
+.subject-name-area {
+    background-color: var(--accent-sky-blue); 
+    color: white; 
+    width: 100%;
+    padding: 15px 5px; 
+    border-radius: 0 0 16px 16px; 
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 10%; /* Set a base height for the colored area */
+    min-height: 30px; 
+}
+.subject-card h3 {
+    font-size: 1.4em; 
+    color: white; 
+    margin-bottom: 0; 
+    margin-top: 0;
+}
+.subject-card .button.start-quiz-button { 
+    display: none; 
+}
+.no-content-message {
+    font-size: 1.1em;
+    color: #6c757d;
+    margin-top: 20px;
+    text-align: center;
+    position: relative; 
+    z-index: 5;
+}
+
+/* --- Responsive Adjustments --- */
+@media (max-width: 1200px) {
+    .container {
+        padding: 0 15px; 
+    }
+    .subject-grid {
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); 
+        gap: 20px;
+    }
+    .subject-card {
+        height: auto; /* Allow height to adjust for smaller screens */
+        min-height: 250px;
+    }
+}
+
+@media (max-width: 992px) { /* Tablet landscape */
+    .section-title-box {
+        width: 90%; 
+        max-width: 486px;
+        margin-top: 15px; 
+    }
+    .section-title { font-size: 1.5em; } 
+
+    .subject-grid {
+        grid-template-columns: repeat(3, 1fr); /* 3 columns on tablet landscape */
+        gap: 15px;
+    }
+    .subject-card {
+        min-height: 220px;
+        border-radius: 15px;
+    }
+    .subject-icon { max-height: 100px; }
+    .subject-name-area { padding: 12px 5px; min-height: 60px; }
+    .subject-card h3 { font-size: 1.1em; }
+}
+
+@media (max-width: 768px) { /* Tablet portrait / Large Phone */
+    .header-container {
+        flex-direction: column;
+        align-items: center;
+    }
+    .header-search-bar {
+        margin: 10px 0;
+        max-width: 90%;
+    }
+    nav ul {
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-top: 10px;
+    }
+    nav ul li {
+        margin: 5px 10px;
+    }
+    .theme-toggle {
+        margin-top: 10px;
+    }
+    
+    .subject-selection-section {
+        margin-top: 20px; 
+    }
+    .section-title-box {
+        padding: 8px 20px;
+        border-radius: 40px;
+        border-width: 3px;
+        font-size: 1.2em; 
+        margin-top: 15px; 
+        width: 80%;
+    }
+    .section-title { font-size: 1.2em; line-height: normal; padding: 5px 0;}
+
+    .subject-grid {
+        grid-template-columns: repeat(2, 1fr); /* Exactly 2 columns on mobile */
+        gap: 15px;
+        padding: 0 10px;
+    }
+    .subject-card {
+        min-height: 180px; 
+        border-radius: 15px;
+    }
+    .subject-icon-container {
+        padding: 10px;
+    }
+    .subject-icon { max-height: 80px; }
+    .subject-name-area { padding: 8px 5px; min-height: 40px; }
+    .subject-card h3 { font-size: 1.1em; }
+    
+    /* Admin specific mobile adjustments */
+    .admin-container { 
+        flex-direction: column; 
+        max-width: 95%; 
+    }
+    .admin-sidebar { 
+        flex: none; 
+        width: 100%; 
+        border-radius: 8px; 
+        margin-bottom: 20px;
+    }
+    .admin-sidebar ul {
+        flex-direction: row; 
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+    }
+    .admin-sidebar ul li {
+        margin-bottom: 0; 
+    }
+    .admin-sidebar ul li a {
+        padding: 5px 10px; 
+    }
+
+    /* Quiz Sheet Mobile Layout */
+    .question-header-row {
+        display: none; 
+    }
+    .question-entry {
+        flex-direction: column; 
+        align-items: stretch; 
+    }
+    .question-entry .field-col {
+        flex: 1 1 100%; 
+    }
+    .question-entry .q-number-col {
+        flex: 1 1 auto; 
+        text-align: left;
+        padding-top: 5px;
+    }
+    .question-entry .action-col {
+        flex: 1 1 auto;
+        padding-top: 5px; 
+    }
+    .question-entry .action-col button {
+        width: 100%; 
+    }
+}
+
+@media (max-width: 480px) { /* Smaller phones */
+    .subject-grid {
+        grid-template-columns: repeat(2, 1fr); /* Exactly 2 columns for very small screens */
+        gap: 10px;
+    }
+    .subject-card {
+        min-height: 150px;
+        border-width: 3px;
+    }
+    .subject-icon { max-height: 60px; }
+    .subject-name-area { padding: 8px 5px; min-height: 40px; }
+    .subject-card h3 { font-size: 0.8em; }
+    .header-search-bar {
+        flex-wrap: wrap;
+        margin: 5px 0;
+    }
+    .search-input {
+        width: 100%;
+        margin-left: 0;
+        margin-bottom: 5px;
+    }
+    .search-button {
+        width: 100%;
+        margin-left: 0;
+    }
 }

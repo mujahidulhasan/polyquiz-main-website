@@ -4,9 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PolyQuiz Admin - {% block title %}{% endblock %}</title>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Kalpurush&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/night_mode.css') }}" class="theme-link">
     <style>
         /* Admin specific styles, override or extend style.css */
         body { background-color: #f8f9fa; }
@@ -42,6 +41,7 @@
                 <li><a href="{{ url_for('admin.dashboard') }}">ড্যাশবোর্ড</a></li>
                 <li><a href="{{ url_for('admin.manage_subjects') }}">বিষয় ম্যানেজ করুন</a></li>
                 <li><a href="{{ url_for('admin.manage_chapters') }}">অধ্যায় ম্যানেজ করুন</a></li>
+                {# CHANGED: The 'href' for "প্রশ্ন আপলোড করুন" to point to admin.upload_quiz #}
                 <li><a href="{{ url_for('admin.upload_quiz') }}">প্রশ্ন আপলোড করুন (এক্সেল)</a></li>
                 <li><a href="{{ url_for('admin.manage_users') }}">ব্যবহারকারী ম্যানেজ করুন</a></li>
                 <li><a href="{{ url_for('admin.site_settings') }}">সাইট সেটিংস</a></li>

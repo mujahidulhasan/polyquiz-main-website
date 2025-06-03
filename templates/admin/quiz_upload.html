@@ -1,0 +1,76 @@
+{# polyquiz/templates/admin/quiz_upload.html #}
+{% extends "admin/admin_layout.html" %}
+{% block title %}প্রশ্ন আপলোড করুন (এক্সেল){% endblock %}
+{% block admin_content %}
+    <h2>প্রশ্ন আপলোড করুন (এক্সেল)</h2>
+    <form method="POST" class="form" enctype="multipart/form-data">
+        {{ form.csrf_token }}
+        <p>
+            {{ form.subject_id.label }}<br>
+            {{ form.subject_id() }}
+            {% for error in form.subject_id.errors %}
+                <span style="color: red;">{{ error }}</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.chapter_id.label }}<br>
+            {{ form.chapter_id() }}
+            {% for error in form.chapter_id.errors %}
+                <span style="color: red;">{{ error }}</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.excel_file.label }}<br>
+            {{ form.excel_file() }}
+            {% for error in form.excel_file.errors %}
+                <span style="color: red;">{{ error }}</span>
+            {% endfor %}
+        </p>
+        <p>{{ form.submit(value='এক্সেল ফাইল আপলোড করুন') }}</p>
+    </form>
+
+    <p style="margin-top: 30px;">
+        **এক্সেল শীটের কলাম ফরম্যাট:**
+        <br>
+        <table class="admin-table" style="font-size: 0.9em;">
+            <thead>
+                <tr>
+                    <th>কলাম A</th>
+                    <th>কলাম B</th>
+                    <th>কলাম C</th>
+                    <th>কলাম D</th>
+                    <th>কলাম E</th>
+                    <th>কলাম F</th>
+                    <th>কলাম G</th>
+                    <th>কলাম H</th>
+                    <th>কলাম I (ঐচ্ছিক)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>প্রশ্ন</td>
+                    <td>অপশন ১</td>
+                    <td>অপশন ২</td>
+                    <td>অপশন ৩</td>
+                    <td>অপশন ৪</td>
+                    <td>সঠিক অপশন নাম্বার (1, 2, 3, or 4)</td>
+                    <td>নেগেটিভ মার্ক</td>
+                    <td>পয়েন্ট</td>
+                    <td>ভিডিও/ছবি লিঙ্ক</td>
+                </tr>
+                <tr>
+                    <td>বাংলাদেশের রাজধানীর নাম কি?</td>
+                    <td>ঢাকা</td>
+                    <td>চট্টগ্রাম</td>
+                    <td>খুলনা</td>
+                    <td>রাজশাহী</td>
+                    <td>1</td>
+                    <td>0.25</td>
+                    <td>1.0</td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+        <p style="font-size: 0.9em; color: #6c757d;">**গুরুত্বপূর্ণ:** এক্সেল শীটে কোনো হেডার রো থাকবে না। সরাসরি কলাম A থেকে ডেটা শুরু হবে।</p>
+    </p>
+{% endblock %}
