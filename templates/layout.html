@@ -1,47 +1,82 @@
+{# polyquiz/templates/layout.html #}
 <!DOCTYPE html>
 <html lang="bn">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PolyQuiz - {% block title %}{% endblock %}</title>
+
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/night_mode.css') }}" class="theme-link">
-    
+
     <script src="https://kit.fontawesome.com/6c84f92693.js" crossorigin="anonymous"></script>
-    
+
 </head>
 <body class="{{ 'dark-mode' if current_theme == 'dark' else '' }}">
     <header>
         <div class="container header-container"> 
-            <a href="{{ url_for('index') }}" class="logo">
-                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="PolyQuiz Logo" class="site-logo"> {# ADDED: Logo Image #}
-                PolyQuiz 
-            </a>
-            
-            {# Search Bar in Header #}
-            <div class="header-search-bar">
-                <input type="text" id="headerSearch" class="search-input" placeholder="কুইজ খুঁজুন...">
-                <button class="search-button"><i class="fas fa-search"></i></button> {# ADDED Search Icon #}
+            {# Barghar Menu Icon for Mobile (TOP LEFT) #}
+            <div class="menu-toggle-icon">
+                <i class="fas fa-bars"></i>
             </div>
-            
-            <nav class="main-nav">
-                <ul>
-                    <li><a href="{{ url_for('index') }}" class="nav-button home-button"><i class="fas fa-home"></i> হোম</a></li> {# ADDED Home Icon, class #}
-                    {% if current_user.is_authenticated %}
-                        <li><a href="{{ url_for('user.dashboard') }}" class="nav-button"><i class="fas fa-user"></i> আমার প্রোফাইল</a></li> 
-                        <li><a href="{{ url_for('auth.logout') }}" class="nav-button logout-button"><i class="fas fa-sign-out-alt"></i> লগআউট</a></li> 
+
+            {# Changed: Logo is now an image #}
+            <a href="{{ url_for('index') }}" class="header-logo-image">
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="PolyQuiz Logo"> 
+            </a>
+
+            {# REMOVED: mobile-search-icon from here #}
+            {# Full Search Bar (Initially visible on desktop, hidden on mobile) #}
+            <div class="header-search-bar" id="desktop-search-bar">
+                <input type="text" id="headerSearch" class="search-input" placeholder="কুইজ খুঁজুন...">
+                <button class="search-button"><i class="fas fa-search"></i></button>
+            </div>
+
+            {# Navigation and Theme Toggle for Mobile Menu #}
+            <div class="mobile-menu-container" id="mobile-menu">
+                {# ADDED: Mobile Search Bar inside menu #}
+                <div class="header-search-bar mobile-only-search" id="mobile-search-bar">
+                    <input type="text" id="mobileHeaderSearch" class="search-input" placeholder="কুইজ খুঁজুন...">
+                    <button class="search-button"><i class="fas fa-search"></i></button>
+                </div>
+
+                <nav class="main-nav">
+                    <ul>
+                        <li><a href="{{ url_for('index') }}">হোম</a></li>
+                        {% if current_user.is_authenticated %}
+                            <li><a href="{{ url_for('user.dashboard') }}" class="nav-button">আমার প্রোফাইল</a></li> 
+                            <li><a href="{{ url_for('auth.logout') }}" class="nav-button logout-button">লগআউট</a></li> 
+                        {% else %}
+                            <li><a href="{{ url_for('auth.login') }}" class="nav-button login-button">লগইন</a></li> 
+                            <li><a href="{{ url_for('auth.register') }}" class="nav-button register-button">রেজিস্টার</a></li> 
+                        {% endif %}
+                        {% if current_user.is_authenticated and current_user.is_admin %}
+                            <li><a href="{{ url_for('admin.dashboard') }}" class="nav-button admin-button">অ্যাডমিন প্যানেল</a></li> 
+                        {% endif %}
+                    </ul>
+                </nav>
+                <div class="theme-toggle">
+                    <button id="theme-switcher"><i class="fas fa-adjust"></i></button>
+                </div>
+                {# DEVELOPED BY SECTION IN MOBILE MENU FOOTER #}
+                <div class="developed-by-section">
+                    {% if current_site_settings.developer_name_text %} 
+                        <p>{{ current_site_settings.developer_name_text }}</p>
                     {% else %}
-                        <li><a href="{{ url_for('auth.login') }}" class="nav-button login-button"><i class="fas fa-sign-in-alt"></i> লগইন</a></li> 
-                        <li><a href="{{ url_for('auth.register') }}" class="nav-button register-button"><i class="fas fa-user-plus"></i> রেজিস্টার</a></li> 
+                        <p>&copy; {{ datetime.now().year }} PolyQuiz</p>
                     {% endif %}
-                    {# Check if current_user is an instance of AdminUser for admin link #}
-                    {% if current_user.is_authenticated and current_user.is_admin %}
-                        <li><a href="{{ url_for('admin.dashboard') }}" class="nav-button admin-button"><i class="fas fa-cog"></i> অ্যাডমিন প্যানেল</a></li> 
+                    {% if current_site_settings.developer_image_url %}
+                        <img src="{{ current_site_settings.developer_image_url }}" alt="Developer Image" class="developer-image">
                     {% endif %}
-                </ul>
-            </nav>
-            <div class="theme-toggle">
-                <button id="theme-switcher"><i class="fas fa-moon"></i></button> {# ADDED Moon Icon for Night Mode #}
+                    <div class="social-links">
+                        {% if current_site_settings.facebook_link %}
+                            <a href="{{ current_site_settings.facebook_link }}" target="_blank"><i class="fab fa-facebook"></i></a>
+                        {% endif %}
+                        {% if current_site_settings.instagram_link %}
+                            <a href="{{ current_site_settings.instagram_link }}" target="_blank"><i class="fab fa-instagram"></i></a>
+                        {% endif %}
+                    </div>
+                </div>
             </div>
         </div>
     </header>

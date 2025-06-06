@@ -56,20 +56,24 @@ html, body {
     height: 100%; /* For sticky footer */
     margin: 0;
     padding: 0;
+    overflow-x: hidden;
 }
 body {
     font-family: 'Hind Siliguri', 'Roboto Condensed', Arial, sans-serif;
     background-color: var(--primary-bg); /* Overall white background */
     color: var(--primary-text);
+    overflow-x: hidden;
     line-height: 1.6;
     display: flex; /* For sticky footer */
     flex-direction: column; /* For sticky footer */
+    min-width: 320px;
     min-height: 100vh; /* For sticky footer */
 }
 .container {
     max-width: 1200px; /* Increased max-width for better layout */
     margin: 0 auto;
     padding: 0 20px;
+    box-sizing: border-box;
 }
 
 /* --- Header --- */
@@ -81,19 +85,12 @@ header {
 }
 header .header-container {
     display: flex;
+    padding: 0 0px;
+    box-sizing: border-box;
     justify-content: space-between;
     align-items: center;
     width: 100%;
-    flex-wrap: wrap; /* Allow wrapping on smaller screens */
-}
-header .logo {
-    font-size: 1.8em;
-    font-weight: bold;
-    color: white;
-    text-decoration: none;
-    padding-left: 0; 
-    display: flex; /* For logo and text alignment */
-    align-items: center;
+    flex-wrap: nowrap; 
 }
 .site-logo { /* Style for the new logo image */
     height: 40px; /* Adjust as needed */
@@ -103,16 +100,16 @@ header .logo {
 
 /* Header Search Bar */
 .header-search-bar {
-    display: flex;
+    margin-left: 30px;
     align-items: center;
     flex-grow: 1; 
     max-width: 400px; 
-    margin: 0 20px; 
+    margin: 0 30px;
     position: relative; /* For search icon positioning */
 }
 .header-search-bar .search-input {
-    width: 100%;
-    padding: 8px 15px;
+    width: 70%;
+    padding: 15px 30px;
     padding-right: 40px; /* Space for icon */
     border: 1px solid rgba(255,255,255,0.5); 
     border-radius: 25px;
@@ -123,17 +120,19 @@ header .logo {
     outline: none;
 }
 .header-search-bar .search-input::placeholder {
+    font-family: 'Hind Siliguri';
+    font-size: 1.3em;
     color: #a0a0a0; /* Faded color for placeholder */
     opacity: 1; /* Ensure placeholder is visible */
 }
 .header-search-bar .search-button {
     background: none; /* No background for button */
     border: none;
-    color: var(--secondary-blue); /* Search icon color (theme color) */
+    color: var(--accent-sky-blue); /* Search icon color (theme color) */
     position: absolute; /* Position icon inside box */
-    right: 15px;
+    right: 60px;
     cursor: pointer;
-    font-size: 1em;
+    font-size: 1.3em;
     transition: color 0.3s ease;
 }
 .header-search-bar .search-button:hover {
@@ -145,6 +144,7 @@ nav.main-nav ul { /* Targeting nav with class main-nav */
     padding: 0;
     margin: 0;
     display: flex;
+    flex-grow: 1;
     justify-content: flex-end;
     align-items: center; /* Align items vertically */
 }
@@ -154,13 +154,16 @@ nav.main-nav ul li {
 /* General styling for all nav links that are NOT buttons */
 nav.main-nav ul li a:not(.nav-button) { 
     color: white;
+    border: 2px solid white;
     text-decoration: none; /* REMOVED UNDERLINE */
     font-weight: bold; /* MADE BOLD */
-    padding: 5px 0;
-    transition: color 0.3s ease;
+    padding: 8px 15px;
+    border-radius: 30px;
+    transition: color 0.3s ease, border-color 0.3s ease, background-color 0.3s ease;
 }
 nav.main-nav ul li a:not(.nav-button):hover {
     color: var(--accent-light-gray);
+    background-color: rgba(255,255,255,0.2);
 }
 /* Login/Register button styles */
 .nav-button {
@@ -224,6 +227,7 @@ nav.main-nav ul li a:not(.nav-button):hover {
 
 /* Icons within buttons/links */
 nav.main-nav ul li a i {
+    display: none;
     margin-right: 5px; /* Space between icon and text */
 }
 .theme-toggle {
@@ -231,12 +235,18 @@ nav.main-nav ul li a i {
     padding-right: 0; 
 }
 .theme-toggle button {
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border: none;
     background: none;
     border: 1px solid white;
     color: white;
-    padding: 5px 10px;
-    border-radius: 5px;
+    border-radius: 50%;
     cursor: pointer;
+    display: flex; 
+    justify-content: center; 
+    align-items: center;
     transition: background-color 0.3s ease, color 0.3s ease;
 }
 .theme-toggle button:hover {
@@ -308,7 +318,7 @@ form button[type="submit"]:hover {
 
 /* --- Footer --- */
 footer {
-    background-color: var(--secondary-blue); /* Consistent with header */
+    background-color: var(--accent-sky-blue); /* Consistent with header */
     color: white;
     text-align: center;
     padding: 1.5em 0; /* More vertical padding */
@@ -483,7 +493,75 @@ footer p {
     position: relative; 
     z-index: 5;
 }
-
+.header-logo-image {
+    display: flex; /* লোগো ইমেজকে ফ্লেক্স আইটেম করে */
+    align-items: center; /* উল্লম্বভাবে মাঝখানে রাখে */
+    justify-content: center; /* অনুভূমিকভাবে মাঝখানে রাখে (যদি লোগো কন্টেইনার বড় হয়) */
+    flex-grow: 0; /* ডেস্কটপে লোগোকে বাড়তে দেবে না */
+    margin-right: auto; /* লোগোকে বাম দিকে ঠেলে দেয়, মেনু ডানদিকে থাকবে */
+    height: 40px;
+}
+.header-logo-image img {
+    height: 40px; /* লোগোর উচ্চতা সেট করে */
+    width: auto; /* প্রস্থ স্বয়ংক্রিয়ভাবে অ্যাডজাস্ট করে */
+    display: block; /* ডিসপ্লে ব্লক করে অতিরিক্ত স্থান সরায় */
+}
+.mobile-search-icon {
+    display: none; /* Desktop: Hidden by default */
+    /* ... অন্যান্য স্টাইল ... */
+}
+.menu-toggle-icon {
+    display: none; /* Desktop: Hidden by default */
+    /* ... অন্যান্য স্টাইল ... */
+}
+.developed-by-section {
+    display: none; /* Hidden by default on desktop */
+    /* ... অন্যান্য স্টাইল (মোবাইলে দেখানোর জন্য @media কোয়েরিতে) ... */
+}
+.developed-by-section p { /* Developed by text */
+    color: white;
+    font-size: 0.9em;
+    margin-bottom: 10px;
+}
+.developed-by-section .developer-image { /* Developer image */
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid white;
+    margin-bottom: 10px;
+}
+.developed-by-section .social-links { /* Social media icons */
+    display: flex;
+    gap: 15px;
+}
+.developed-by-section .social-links a {
+    color: white;
+    font-size: 1.5em;
+    transition: color 0.3s ease;
+}
+.developed-by-section .social-links a:hover {
+    color: var(--accent-light-gray);
+}
+.mobile-menu-container {
+    display: flex; /* Desktop: Navigation and theme toggle visible */
+    align-items: center;
+    flex-grow: 0;
+    margin-left: auto;
+    /* ... অন্যান্য স্টাইল ... */
+}
+.theme-toggle button i { /* Style the icon inside the button */
+    font-size: 1.2em; /* আইকন সাইজ অ্যাডজাস্ট করুন */
+    margin: 0; /* নিশ্চিত করুন কোনো অতিরিক্ত মার্জিন নেই */
+}
+#desktop-search-bar {
+    display: flex; /* Default: visible on desktop */
+    /* ... অন্যান্য ডেস্কটপ স্টাইল ... */
+}
+/* নিশ্চিত করুন যে .mobile-only-search ডেস্কটপে display: none আছে */
+.mobile-only-search {
+    display: none; /* Desktop: Hidden by default */
+}
 /* --- Responsive Adjustments --- */
 @media (max-width: 1200px) {
     .container {
@@ -520,14 +598,175 @@ footer p {
     .subject-card h3 { font-size: 1.1em; }
 }
 
-@media (max-width: 768px) { /* Tablet portrait / Large Phone */
+@media (max-width: 600px) { /* Tablet portrait / Large Phone */
     .header-container {
-        flex-direction: column;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
         align-items: center;
+        padding: 0 10px;
+    }
+    .header-logo-image { /* Mobile logo */
+        order: 2; 
+        flex-grow: 1;
+        text-align: center;
+    }
+    .header-search-bar { /* ডেস্কটপ সার্চ বার */
+        display: none; /* মোবাইলে লুকিয়ে রাখুন */
+    }
+    .mobile-menu-container .header-search-bar { /* নতুন করে যোগ করা */
+        display: flex; /* মেনুর ভেতরে সার্চ বক্স দেখায় */
+        width: 90%; 
+        margin: 20px auto; 
+        padding: 0; 
+    }
+    .mobile-menu-container .header-search-bar .search-input {
+        background-color: var(--primary-bg); /* সাদা ব্যাকগ্রাউন্ড */
+        color: var(--primary-text);
+        border: 2px solid var(--accent-sky-blue);
+    }
+    .mobile-menu-container .header-search-bar .search-input::placeholder {
+        color: #a0a0a0;
+    }
+    .mobile-menu-container .header-search-bar .search-button {
+        color: var(--accent-sky-blue);
+    }
+    .header-logo-image img {
+        height: 30px;  /* মোবাইলে লোগোর আকার ছোট করুন */
     }
     .header-search-bar {
+        display: none;
+    }
+    .developed-by-section {
+        display: flex; /* মোবাইলে দেখাবে */
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        margin-top: auto;
+        padding: none;
+        width: 100%;
+        background-color: var(--primary-bg); /* CHANGED: সাদা ব্যাকগ্রাউন্ড হবে */
+         /* CHANGED: হালকা বর্ডার */
+    }
+    .developed-by-section p {
+        color: var(--primary-text);
+        font-size: 0.9em;
+        margin-bottom: 10px;
+    }
+    .developed-by-section .developer-image {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        border: 3px solid var(--accent-sky-blue);
+        object-fit: cover;
+        margin-bottom: 10px;
+    }
+    .developed-by-section .social-links {
+        display: flex;
+        gap: 15px;
+        margin-top: 10px;
+    }
+    .developed-by-section .social-links a {
+        color: var(--accent-sky-blue);
+        transition: color 0.3s ease;
+    }
+    .developed-by-section .social-links a:hover {
+        color: var(--primary-text);
+    }
+    .mobile-search-icon {
+        display: none;                            
+    }
+    .menu-toggle-icon {
+        display: block; /* বার্গার মেনু আইকনকে দেখায় */
+        order: 1;
+        margin-right: 0px;
+        margin-left: 10px;
+    }
+    .mobile-menu-container {
+        display: none; /* মোবাইলে ডিফল্টভাবে লুকানো থাকে */
+        flex-direction: column; /* মেনু আইটেমগুলো লম্বালম্বি সাজায় */
+        position: fixed; /* স্ক্রিনে ফিক্সড পজিশন */
+        top: 0; /* স্ক্রিনের একদম উপরে */
+        right: 0; /* ডান দিক থেকে আসবে */
+        width: 60%; /* স্ক্রিনের অর্ধেক অংশ জুড়ে */
+        height: 100vh; /* পুরো উচ্চতা */
+        background-color: var(--primary-bg); /* মেনুর ব্যাকগ্রাউন্ড কালার */
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2); /* বাম দিকে শ্যাডো */
+        z-index: 1000; /* অন্যান্য সবকিছুর উপরে রাখে */
+        padding: 20px 0;
+        border-bottom-left-radius: 8px;
+        border-top-left-radius: 8px; /* উপরে বাম দিকে রাউন্ড করতে */
+        transform: translateX(100%); /* ডিফল্টভাবে ডানদিকে স্ক্রিনের বাইরে */
+        transition: transform 0.3s ease-out; /* অ্যানিমেশন */
+        justify-content: flex-start;
+        align-items: center;
+    }
+    .mobile-only-search { /* This is the search bar inside the mobile menu */
+        display: flex; /* মেনুর ভেতরে সার্চ বক্স দেখায় */
+        width: 90%; /* মেনুর ভেতরের প্রস্থ */
+        margin: 20px auto; /* মাঝখানে ও উপরে নিচে স্পেস */
+        padding: 0; /* নিশ্চিত করুন কোনো অতিরিক্ত প্যাডিং নেই */
+    }
+    .mobile-only-search .search-input::placeholder {
+        color: #a0a0a0; /* ফেইডেড কালার */
+    }
+    .mobile-only-search .search-button {
+        color: var(--primary-text); /* আইকন কালার */
+    }
+    .mobile-only-search .search-input {
+        background-color: var(--primary-bg); /* সাদা ব্যাকগ্রাউন্ড */
+        color: var(--primary-text); /* টেক্সট কালার */
+        border-color: var(--primary-border); /* বর্ডার কালার */
+    }
+
+    .mobile-menu-container.active {
+        transform: translateX(0%);
+        display: flex; /* জাভাস্ক্রিপ্ট দ্বারা যখন মেনু সক্রিয় হবে তখন দেখাবে */
+    }
+    nav.main-nav ul {
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        margin-top: 20px;
+    }
+    nav.main-nav ul li {
         margin: 10px 0;
-        max-width: 90%;
+        width: 80%; /* মেনুর আইটেমগুলোকে পুরো প্রস্থ জুড়ে রাখে */
+        text-align: center;
+    }
+    
+    .theme-toggle {
+        margin-left: 20px;
+        width: 80%;
+    }
+    .theme-toggle button i {
+        color: var(--accent-sky-blue);
+        font-size: 1.5em; /* মোবাইলে আইকন সাইজ বাড়ান */
+    }
+    .theme-toggle button {
+        width: 100%;
+        padding: 10px;
+        background-color: transparent;
+        border: none;
+        font-size: 1.5em;
+        text-indent: 0;
+        white-space: normal;
+        overflow: visible;
+        position: static;
+        color: var(--accent-sky-blue);
+    }
+    nav.main-nav ul li a:hover { /* হোভার স্টাইল */
+        background-color: var(--accent-light-gray); /* হালকা ধূসর হোভার */
+        color: var(--secondary-dark-blue); /* হোভারে লেখার রঙ */
+    }
+    nav.main-nav ul li a {
+        padding: 10px 0;
+        color: var(--accent-sky-blue);
+        background-color: transparent; /* মেনুর আইটেমগুলোর ব্যাকগ্রাউন্ড কালার */
+        border-radius: none;
+        text-decoration: none;
+        font-weight: normal;
+        border-radius: 0;
     }
     nav ul {
         flex-wrap: wrap;
@@ -538,28 +777,35 @@ footer p {
         margin: 5px 10px;
     }
     .theme-toggle {
-        margin-top: 10px;
+        margin-top: 20px;
+        width: 80%;
     }
     
     .subject-selection-section {
-        margin-top: 20px; 
+        margin-top: -10px;
+        align-self: center;
     }
     .section-title-box {
         padding: 8px 20px;
         border-radius: 40px;
         border-width: 3px;
-        font-size: 1.2em; 
-        margin-top: 15px; 
-        width: 80%;
+        font-size: 0.8em; 
+        margin-top: 8px; 
+        width: 170px;
+        height: 20px;
+        justify-content: center;
     }
     .section-title { font-size: 1.2em; line-height: normal; padding: 5px 0;}
 
     .subject-grid {
         grid-template-columns: repeat(2, 1fr); /* Exactly 2 columns on mobile */
-        gap: 15px;
+        gap: 20px 30px;
         padding: 0 10px;
+        justify-content: center;
     }
     .subject-card {
+        height: auto;
+        border-width: 3px;
         min-height: 180px; 
         border-radius: 15px;
     }
@@ -619,29 +865,61 @@ footer p {
     }
 }
 
-@media (max-width: 480px) { /* Smaller phones */
-    .subject-grid {
-        grid-template-columns: repeat(2, 1fr); /* Exactly 2 columns for very small screens */
-        gap: 10px;
-    }
-    .subject-card {
-        min-height: 150px;
-        border-width: 3px;
-    }
-    .subject-icon { max-height: 60px; }
-    .subject-name-area { padding: 8px 5px; min-height: 40px; }
-    .subject-card h3 { font-size: 0.8em; }
-    .header-search-bar {
-        flex-wrap: wrap;
-        margin: 5px 0;
-    }
-    .search-input {
-        width: 100%;
-        margin-left: 0;
-        margin-bottom: 5px;
-    }
-    .search-button {
-        width: 100%;
-        margin-left: 0;
-    }
+.home-button {
+    color: #ffffff;
+    font-weight: bold;
+    border-bottom: 2px solid #ffffff;
+    background-color: transparent;
 }
+.theme-toggle button {
+    background: transparent;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--text-color);
+    cursor: pointer;
+}
+.quiz-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 20px;
+    padding: 15px;
+    justify-items: center;
+  }
+  
+  .quiz-card {
+    background-color: #ffffff;
+    border: 2px solid #00bfff;
+    border-radius: 12px;
+    padding: 15px;
+    width: 100%;
+    max-width: 180px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .quiz-card img {
+    width: 100%;
+    height: auto;
+    max-height: 100px;
+    object-fit: contain;
+    margin-bottom: 10px;
+  }
+  
+  .quiz-card p {
+    font-weight: bold;
+    color: #007acc;
+    margin: 0;
+  }
+  
+  /* মোবাইলে ২টি কলাম দেখানোর জন্য */
+  @media (max-width: 768px) {
+    .quiz-container {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+    }
+  
+    .quiz-card {
+      max-width: 160px;
+    }
+  }
+  

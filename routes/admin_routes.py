@@ -1,11 +1,11 @@
 import os
 from flask import Blueprint, render_template, redirect, url_for, flash, request, current_app
-from flask_login import login_required, current_user
-from models import AdminUser, Subject, Chapter, QuizQuestion, SiteSetting, User # Import User model for management
+from flask_login import login_required, current_user 
+from models import AdminUser, Subject, Chapter, QuizQuestion, SiteSetting, User 
 from database import db
 from forms import SubjectForm, ChapterForm, QuizUploadForm, QuestionForm, SiteSettingForm 
 from utils.excel_parser import parse_quiz_excel
-from utils import file_upload_handler
+from utils import file_upload_handler 
 from werkzeug.utils import secure_filename
 import logging 
 
@@ -38,7 +38,7 @@ def manage_subjects():
     if form.validate_on_submit():
         subject_name = form.name.data
         is_active = form.is_active.data
-        image_file = form.image_file.data
+        image_file = form.image_file.data # Get file from form
 
         existing_subject = Subject.query.filter_by(name=subject_name).first()
         if existing_subject:
@@ -51,7 +51,7 @@ def manage_subjects():
                     flash('ছবি আপলোডে ত্রুটি।', 'danger')
                     return render_template('admin/manage_subjects.html', subjects=Subject.query.all(), form=form)
 
-            new_subject = Subject(name=subject_name, is_active=is_active, image_url=image_url) 
+            new_subject = Subject(name=subject_name, is_active=is_active, image_url=image_url) # Save URL
             db.session.add(new_subject)
             db.session.commit()
             flash('বিষয় সফলভাবে যোগ করা হয়েছে!', 'success')
@@ -69,9 +69,10 @@ def edit_subject(subject_id):
     if form.validate_on_submit():
         subject.name = form.name.data
         subject.is_active = form.is_active.data
-        image_file = form.image_file.data
+        image_file = form.image_file.data # Get file from form
 
         if image_file and file_upload_handler.allowed_file(image_file.filename):
+            # Delete old image from Cloudinary if it exists
             if subject.image_url:
                 file_upload_handler.delete_file_from_cloudinary(subject.image_url)
             
@@ -79,8 +80,8 @@ def edit_subject(subject_id):
             if not new_image_url:
                 flash('নতুন ছবি আপলোডে ত্রুটি।', 'danger')
                 return render_template('admin/edit_subject.html', form=form, subject=subject)
-            subject.image_url = new_image_url
-        elif 'remove_image' in request.form and request.form['remove_image'] == 'true': 
+            subject.image_url = new_image_url # Save new URL
+        elif 'remove_image' in request.form and request.form['remove_image'] == 'true': # Option to remove existing image
             if subject.image_url:
                 file_upload_handler.delete_file_from_cloudinary(subject.image_url)
             subject.image_url = None
@@ -95,7 +96,7 @@ def edit_subject(subject_id):
 # @login_required 
 def delete_subject(subject_id):
     subject = Subject.query.get_or_404(subject_id)
-    if subject.image_url:
+    if subject.image_url: # Delete image from Cloudinary
         file_upload_handler.delete_file_from_cloudinary(subject.image_url)
     
     db.session.delete(subject)
@@ -109,14 +110,14 @@ def delete_subject(subject_id):
 def manage_chapters():
     form = ChapterForm()
     form.subject_id.choices = [(s.id, s.name) for s in Subject.query.order_by(Subject.name).all()]
-    form.subject_id.choices.insert(0, (0, 'একটি বিষয় নির্বাচন করুন'))
+    form.subject_id.choices.insert(0, (0, 'একটি বিষয় নির্বাচন করুন')) # Add a default placeholder
 
     if form.validate_on_submit():
         chapter_name = form.name.data
         subject_id = form.subject_id.data
         for_class = form.for_class.data
         is_active = form.is_active.data
-        image_file = form.image_file.data
+        image_file = form.image_file.data # Get file from form
 
         existing_chapter = Chapter.query.filter_by(name=chapter_name, subject_id=subject_id, for_class=for_class).first()
         if existing_chapter:
@@ -188,7 +189,7 @@ def delete_chapter(chapter_id):
 @admin_bp.route('/quiz_upload', methods=['GET', 'POST']) 
 # @login_required 
 def upload_quiz(): 
-    form = QuizUploadForm() # Now using QuizUploadForm for Excel files
+    form = QuizUploadForm()
     form.subject_id.choices = [(s.id, s.name) for s in Subject.query.order_by(Subject.name).all()]
     form.chapter_id.choices = [(c.id, c.name) for c in Chapter.query.order_by(Chapter.name).all()]
     
@@ -257,11 +258,20 @@ def site_settings():
     
     notice_setting = SiteSetting.query.filter_by(setting_key='homepage_notice').first()
     theme_setting = SiteSetting.query.filter_by(setting_key='default_theme').first()
+    
+    developer_name_setting = SiteSetting.query.filter_by(setting_key='developer_name_text').first() 
+    developer_image_setting = SiteSetting.query.filter_by(setting_key='developer_image_url').first()
+    facebook_link_setting = SiteSetting.query.filter_by(setting_key='facebook_link').first()
+    instagram_link_setting = SiteSetting.query.filter_by(setting_key='instagram_link').first()
+
 
     if request.method == 'GET':
         if notice_setting: form.homepage_notice.data = notice_setting.setting_value
         if theme_setting: form.theme_setting.data = theme_setting.setting_value
-    
+        if developer_name_setting: form.developer_name_text.data = developer_name_setting.setting_value
+        if facebook_link_setting: form.facebook_link.data = facebook_link_setting.setting_value
+        if instagram_link_setting: form.instagram_link.data = instagram_link_setting.setting_value
+        
     if form.validate_on_submit():
         if notice_setting:
             notice_setting.setting_value = form.homepage_notice.data
@@ -275,6 +285,41 @@ def site_settings():
             new_theme_setting = SiteSetting(setting_key='default_theme', setting_value=form.theme_setting.data)
             db.session.add(new_theme_setting)
         
+        if developer_name_setting:
+            developer_name_setting.setting_value = form.developer_name_text.data
+        else:
+            new_dev_name_setting = SiteSetting(setting_key='developer_name', setting_value=form.developer_name_text.data)
+            db.session.add(new_dev_name_setting)
+        
+        developer_image_file = form.developer_image_file.data
+        if developer_image_file and file_upload_handler.allowed_file(developer_image_file.filename):
+            if developer_image_setting and developer_image_setting.setting_value: 
+                file_upload_handler.delete_file_from_cloudinary(developer_image_setting.setting_value)
+            new_image_url = file_upload_handler.upload_file_to_cloudinary(developer_image_file, folder_name='developer_image')
+            if new_image_url:
+                if developer_image_setting:
+                    developer_image_setting.setting_value = new_image_url
+                else:
+                    db.session.add(SiteSetting(setting_key='developer_image_url', setting_value=new_image_url))
+            else:
+                flash('ডেভেলপার ছবি আপলোডে ত্রুটি।', 'danger')
+        elif 'remove_developer_image' in request.form and request.form['remove_developer_image'] == 'true':
+            if developer_image_setting and developer_image_setting.setting_value:
+                file_upload_handler.delete_file_from_cloudinary(developer_image_setting.setting_value)
+                developer_image_setting.setting_value = None 
+        
+        if facebook_link_setting:
+            facebook_link_setting.setting_value = form.facebook_link.data
+        else:
+            new_fb_link_setting = SiteSetting(setting_key='facebook_link', setting_value=form.facebook_link.data)
+            db.session.add(new_fb_link_setting)
+
+        if instagram_link_setting:
+            instagram_link_setting.setting_value = form.instagram_link.data
+        else:
+            new_insta_link_setting = SiteSetting(setting_key='instagram_link', setting_value=form.instagram_link.data)
+            db.session.add(new_insta_link_setting)
+            
         db.session.commit()
         flash('সাইট সেটিংস সফলভাবে আপডেট করা হয়েছে!', 'success')
         return redirect(url_for('admin.site_settings'))

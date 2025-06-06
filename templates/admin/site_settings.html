@@ -1,8 +1,9 @@
+{# polyquiz/templates/admin/site_settings.html #}
 {% extends "admin/admin_layout.html" %}
 {% block title %}সাইট সেটিংস{% endblock %}
 {% block admin_content %}
     <h2>সাইট সেটিংস</h2>
-    <form method="POST" class="form">
+    <form method="POST" class="form" enctype="multipart/form-data">
         {{ form.csrf_token }}
         <p>
             {{ form.homepage_notice.label }}<br>
@@ -18,6 +19,46 @@
                 <span style="color: red;">{{ error }}</span>
             {% endfor %}
         </p>
+
+        <h3>ডেভেলপার তথ্য (মোবাইল মেনুর নিচে)</h3>
+        <p>
+            {{ form.developer_name_text.label }}<br>
+            {{ form.developer_name_text(size=32) }}
+            {% for error in form.developer_name_text.errors %}
+                <span style="color: red;">{{ error }}</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.developer_image_file.label }}<br>
+            {{ form.developer_image_file() }}
+            {% for error in form.developer_image_file.errors %}
+                <span style="color: red;">{{ error }}</span>
+            {% endfor %}
+            {# Display current image if exists #}
+            {% if developer_image_url %}
+                <div style="margin-top: 10px;">
+                    <img src="{{ developer_image_url }}" alt="Developer Current Image" style="max-width: 100px; height: auto; border: 1px solid #ddd; border-radius: 50%;">
+                    <br>
+                    <input type="checkbox" name="remove_developer_image" value="true"> বর্তমান ছবি মুছে ফেলুন
+                </div>
+            {% endif %}
+        </p>
+        <p>
+            {{ form.facebook_link.label }}<br>
+            {{ form.facebook_link(size=50) }}
+            {% for error in form.facebook_link.errors %}
+                <span style="color: red;">{{ error }}</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.instagram_link.label }}<br>
+            {{ form.instagram_link(size=50) }}
+            {% for error in form.instagram_link.errors %}
+                <span style="color: red;">{{ error }}</span>
+            {% endfor %}
+        </p>
+        {# Add more social media links here if needed #}
+
         <p>{{ form.submit(value='সেটিংস সেভ করুন') }}</p>
     </form>
 {% endblock %}

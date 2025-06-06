@@ -8,27 +8,51 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/night_mode.css') }}" class="theme-link">
     <style>
         /* Admin specific styles, override or extend style.css */
-        body { background-color: #f8f9fa; }
-        .admin-header { background-color: #343a40; color: white; padding: 1em; text-align: center; }
+        body { background-color: var(--f8f9fa); } /* Using CSS variable */
+        .admin-header { background-color: var(--accent-dark-gray); color: white; padding: 1em; text-align: center; }
         .admin-header h1 { margin: 0; }
-        .admin-container { display: flex; max-width: 1200px; margin: 20px auto; background-color: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); min-height: 600px;}
-        .admin-sidebar { flex: 0 0 250px; background-color: #495057; padding: 20px; border-top-left-radius: 8px; border-bottom-left-radius: 8px;}
+        .admin-container { 
+            display: flex; 
+            max-width: 1200px; 
+            margin: 20px auto; 
+            background-color: var(--primary-bg); 
+            border-radius: 8px; 
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1); 
+            min-height: 600px;
+        }
+        .admin-sidebar { 
+            flex: 0 0 250px; 
+            background-color: var(--accent-dark-gray); 
+            padding: 20px; 
+            border-top-left-radius: 8px; 
+            border-bottom-left-radius: 8px;
+        }
         .admin-sidebar ul { list-style: none; padding: 0; margin: 0; }
         .admin-sidebar ul li { margin-bottom: 10px; }
-        .admin-sidebar ul li a { color: #f8f9fa; text-decoration: none; display: block; padding: 8px 10px; border-radius: 4px; }
-        .admin-sidebar ul li a:hover { background-color: #6c757d; }
+        .admin-sidebar ul li a { 
+            color: var(--accent-light-gray); 
+            text-decoration: none; 
+            display: block; 
+            padding: 8px 10px; 
+            border-radius: 4px; 
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        .admin-sidebar ul li a:hover { background-color: var(--primary-text); color: white;}
         .admin-content { flex-grow: 1; padding: 20px; }
         .admin-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        .admin-table th, .admin-table td { border: 1px solid #dee2e6; padding: 8px; text-align: left; }
-        .admin-table th { background-color: #e9ecef; }
-        .admin-table .actions a, .admin-table .actions button { margin-right: 5px; padding: 5px 10px; text-decoration: none; border: none; border-radius: 4px; cursor: pointer; font-size: 0.9em; }
-        .admin-table .actions a.edit { background-color: #ffc107; color: #333; }
-        .admin-table .actions button.delete { background-color: #dc3545; color: white; }
+        .admin-table th, .admin-table td { border: 1px solid var(--primary-border); padding: 8px; text-align: left; }
+        .admin-table th { background-color: var(--accent-light-gray); }
+        .admin-table .actions a, .admin-table .actions button { 
+            margin-right: 5px; padding: 5px 10px; text-decoration: none; border: none; 
+            border-radius: 4px; cursor: pointer; font-size: 0.9em; 
+        }
+        .admin-table .actions a.edit { background-color: var(--accent-orange); color: var(--primary-text); }
+        .admin-table .actions button.delete { background-color: var(--accent-red); color: white; }
         .admin-table .actions button.delete:hover { background-color: #c82333; }
 
-        .form { max-width: 600px; margin: 20px auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;}
-        .form input[type="submit"] { background-color: #28a745; border: none; color: white; padding: 10px 20px; border-radius: 5px; cursor: pointer;}
-        .form input[type="submit"]:hover { background-color: #218838; }
+        .form { max-width: 800px; margin: 20px auto; padding: 20px; border: 1px solid var(--primary-border); border-radius: 8px;} 
+        .form input[type="submit"] { background-color: var(--secondary-green); } /* Admin submit button green */
+        .form input[type="submit"]:hover { background-color: var(--secondary-dark-green); }
     </style>
 </head>
 <body>
@@ -61,5 +85,9 @@
             {% block admin_content %}{% endblock %}
         </div>
     </div>
+    {# ADDED: Link to main.js for admin panel functionality #}
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {# You might need specific admin JS here later. #}
+    {% block scripts %}{% endblock %}
 </body>
 </html>

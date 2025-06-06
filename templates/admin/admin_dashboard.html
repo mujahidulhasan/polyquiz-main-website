@@ -1,3 +1,4 @@
+{# polyquiz/templates/admin/admin_dashboard.html #}
 {% extends "admin/admin_layout.html" %}
 {% block title %}অ্যাডমিন ড্যাশবোর্ড{% endblock %}
 {% block admin_content %}
@@ -9,7 +10,8 @@
         <ul>
             <li><a href="{{ url_for('admin.manage_subjects') }}">বিষয় ম্যানেজ করুন</a></li>
             <li><a href="{{ url_for('admin.manage_chapters') }}">অধ্যায় ম্যানেজ করুন</a></li>
-            <li><a href="{{ url_for('admin.manage_quiz_sheet') }}">প্রশ্ন আপলোড করুন (ইনলাইন শীট)</a></li> {# CHANGED: Points to new route name #}
+            {# CHANGED: The 'href' for "প্রশ্ন আপলোড করুন" to point to admin.upload_quiz #}
+            <li><a href="{{ url_for('admin.upload_quiz') }}">প্রশ্ন আপলোড করুন (এক্সেল)</a></li>
             <li><a href="{{ url_for('admin.manage_users') }}">ব্যবহারকারী ম্যানেজ করুন</a></li>
             <li><a href="{{ url_for('admin.site_settings') }}">সাইট সেটিংস</a></li>
             <li><a href="{{ url_for('auth.logout') }}">লগআউট</a></li>

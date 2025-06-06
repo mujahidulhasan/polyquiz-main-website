@@ -77,4 +77,8 @@ class QuestionForm(FlaskForm): # For individual question management/editing late
 class SiteSettingForm(FlaskForm):
     homepage_notice = TextAreaField('হোমপেজ নোটিশ', render_kw={"rows": 5})
     theme_setting = SelectField('ওয়েবসাইট থিম', choices=[('default', 'ডিফল্ট'), ('dark', 'ডার্ক')], validators=[DataRequired()])
+    developer_name_text = StringField('ডেভেলপার নাম টেক্সট', validators=[Length(max=255)])
+    developer_image_file = FileField('ডেভেলপার ছবি আপলোড করুন', validators=[FileAllowed(['png', 'jpg', 'jpeg', 'gif'])])
+    facebook_link = StringField('ফেসবুক লিংক')
+    instagram_link = StringField('ইনস্টাগ্রাম লিংক')
     submit = SubmitField('সেভ করুন')

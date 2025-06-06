@@ -6,13 +6,11 @@ from database import db, init_db
 from models import User, AdminUser, Subject, Chapter, QuizQuestion, SiteSetting
 from utils.file_upload_handler import init_cloudinary
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user, UserMixin
-from werkzeug.security import generate_password_hash # For initial admin user
+from werkzeug.security import generate_password_hash
 from datetime import datetime
-import logging
-from flask_session import Session # ADDED: Import Flask-Session
+import logging 
+from flask_session import Session # Import Flask-Session after db is initialized
 
-# --- Setup logging ---
-logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # --- Load environment variables from .env file ---
@@ -21,7 +19,7 @@ load_dotenv()
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_object(Config)
 
-# --- Explicitly set SECRET_KEY (Crucial for Flask-WTF and Sessions) ---
+# --- Explicitly set SECRET_KEY ---
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 logger.info(f"App SECRET_KEY loaded (length: {len(app.config['SECRET_KEY']) if app.config['SECRET_KEY'] else 'None'})")
 
@@ -30,38 +28,31 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # --- Flask-Session configuration for Server-Side Sessions ---
-app.config['SESSION_TYPE'] = 'sqlalchemy' # Store sessions in SQLAlchemy database
-app.config['SESSION_SQLALCHEMY'] = db # Use our existing SQLAlchemy database instance
-app.config['SESSION_USE_SIGNER'] = True # Sign the session ID cookie for security
-app.config['SESSION_PERMANENT'] = False # Sessions are not permanent by default (cleared on browser close)
-app.config['SESSION_COOKIE_SAMESITE'] = 'Lax' # Good default for CSRF protection and cookie sending
+app.config['SESSION_TYPE'] = 'sqlalchemy' 
+app.config['SESSION_SQLALCHEMY'] = db 
+app.config['SESSION_USE_SIGNER'] = True 
+app.config['SESSION_PERMANENT'] = False 
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax' 
 
 # IMPORTANT for Render/Production (HTTPS):
-# Change these two to False for local HTTP testing:
-app.config['SESSION_COOKIE_SECURE'] = True      # Only send session cookie over HTTPS
-app.config['REMEMBER_COOKIE_SECURE'] = True     # For Flask-Login's remember me cookie
-app.config['SESSION_COOKIE_HTTPONLY'] = True    # Prevent client-side JS access to session cookie
-app.config['REMEMBER_COOKIE_HTTPONLY'] = True   # Prevent client-side JS access to remember me cookie
-app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'   # Good default for CSRF protection and cookie sending
-app.config['REMEMBER_COOKIE_SAMESITE'] = 'Lax'
-# --- END Flask-Session Config ---
+app.config['SESSION_COOKIE_SECURE'] = True      
+app.config['REMEMBER_COOKIE_SECURE'] = True     
+app.config['SESSION_COOKIE_HTTPONLY'] = True    
+app.config['REMEMBER_COOKIE_HTTPONLY'] = True   
 
 
-# Ensure local upload folder exists (for temporary file storage before Cloudinary upload)
+# Ensure local upload folder exists if local testing
 if not os.path.exists(os.path.join(app.root_path, app.config['UPLOAD_FOLDER'])):
     os.makedirs(os.path.join(app.root_path, app.config['UPLOAD_FOLDER']))
 
 # Initialize extensions
-init_db(app) # Initialize SQLAlchemy
-init_cloudinary(app) # Initialize Cloudinary
-
-# Initialize Flask-Session AFTER db is initialized
-server_session = Session(app) # ADDED: Initialize Flask-Session
-
+init_db(app) 
+server_session = Session(app) # Initialize Flask-Session
+init_cloudinary(app) 
 
 login_manager = LoginManager()
 login_manager.init_app(app)
-login_manager.login_view = 'auth.login'
+login_manager.login_view = 'auth.login' 
 login_manager.login_message_category = 'info'
 login_manager.login_message = "Please log in to access this page."
 
@@ -78,7 +69,6 @@ class UserAdapter(UserMixin):
     def __getattr__(self, name):
         return getattr(self.obj, name)
 
-# Flask-Login: Tells how to load a user from the user ID stored in the session
 @login_manager.user_loader
 def load_user(user_id):
     logger.info(f"load_user called for user_id: {user_id}")
@@ -90,7 +80,7 @@ def load_user(user_id):
             return UserAdapter(admin_user)
     else:
         try:
-            user_id_int = int(user_id)
+            user_id_int = int(user_id) 
             regular_user = User.query.get(user_id_int)
             if regular_user:
                 logger.info(f"load_user: Found User {regular_user.username}")
@@ -112,26 +102,38 @@ app.register_blueprint(user_bp, url_prefix='/user')
 app.register_blueprint(admin_bp, url_prefix='/admin')
 
 # --- Database Initialization and Initial Data Setup ---
-# This block runs when the app context is available (e.g., during app startup)
 with app.app_context():
-    db.create_all() # Create all application tables (including models.py tables)
-    # server_session.create_all() is NOT needed here. Flask-Session automatically creates its table.
-    # We removed this line as it caused an AttributeError.
+    db.create_all() 
+    # REMOVED: server_session.create_all() # This line caused the error, db.create_all() handles it
 
     if not AdminUser.query.filter_by(username='admin').first():
         default_admin = AdminUser(username='admin')
-        default_admin.set_password('QizMaker*001%') # **SET YOUR ADMIN PASSWORD HERE. CHANGE IT TO A SECURE ONE!**
+        default_admin.set_password('QizMaker*001%') 
         db.session.add(default_admin)
         db.session.commit()
         logger.info("Default admin user 'admin' created. **CHANGE PASSWORD IMMEDIATELY AFTER FIRST LOGIN!**")
 
+    # Set initial site settings for homepage notice and theme if they don't exist
+    # Also for developer info if it doesn't exist
     if not SiteSetting.query.filter_by(setting_key='homepage_notice').first():
         db.session.add(SiteSetting(setting_key='homepage_notice', setting_value=''))
     if not SiteSetting.query.filter_by(setting_key='default_theme').first():
         db.session.add(SiteSetting(setting_key='default_theme', setting_value='default'))
+    
+    # Initialize developer info settings if not exist
+    if not SiteSetting.query.filter_by(setting_key='developer_name_text').first():
+        db.session.add(SiteSetting(setting_key='developer_name_text', setting_value='Developed by Mujahid'))
+    if not SiteSetting.query.filter_by(setting_key='developer_image_url').first():
+        db.session.add(SiteSetting(setting_key='developer_image_url', setting_value='')) 
+    if not SiteSetting.query.filter_by(setting_key='facebook_link').first():
+        db.session.add(SiteSetting(setting_key='facebook_link', setting_value=''))
+    if not SiteSetting.query.filter_by(setting_key='instagram_link').first():
+        db.session.add(SiteSetting(setting_key='instagram_link', setting_value=''))
+    
     db.session.commit()
 
-# --- Global context processor ---
+
+# --- Global context processor for current theme and notice and developer info ---
 @app.context_processor
 def inject_global_data():
     notice_setting = SiteSetting.query.filter_by(setting_key='homepage_notice').first()
@@ -140,7 +142,19 @@ def inject_global_data():
     theme_setting = SiteSetting.query.filter_by(setting_key='default_theme').first()
     current_theme = theme_setting.setting_value if theme_setting else 'default'
 
-    return dict(current_notice=current_notice, current_theme=current_theme, datetime=datetime)
+    developer_name_setting = SiteSetting.query.filter_by(setting_key='developer_name_text').first()
+    developer_image_setting = SiteSetting.query.filter_by(setting_key='developer_image_url').first()
+    facebook_link_setting = SiteSetting.query.filter_by(setting_key='facebook_link').first()
+    instagram_link_setting = SiteSetting.query.filter_by(setting_key='instagram_link').first()
+
+    current_site_settings = {
+        'developer_name_text': developer_name_setting.setting_value if developer_name_setting else '',
+        'developer_image_url': developer_image_setting.setting_value if developer_image_setting else '',
+        'facebook_link': facebook_link_setting.setting_value if facebook_link_setting else '',
+        'instagram_link': instagram_link_setting.setting_value if instagram_link_setting else ''
+    }
+
+    return dict(current_notice=current_notice, current_theme=current_theme, datetime=datetime, current_site_settings=current_site_settings)
 
 
 # --- Error Handlers ---
