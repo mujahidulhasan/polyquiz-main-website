@@ -454,13 +454,19 @@ footer p {
     flex-grow: 1; 
     display: flex;
     justify-content: center;
+    overflow: hidden;
     align-items: center;
     padding: 20px; 
+    border: none;
+    border-radius: 50%;
+    flex-grow: 1;
     background-color: white; 
+    margin-top: 15px;
 }
 .subject-icon {
     max-width: 80%;
-    max-height: 120px; 
+    max-height: 120px;
+    border-radius: 50%;
     object-fit: contain;
 }
 .subject-name-area {
@@ -468,7 +474,7 @@ footer p {
     color: white; 
     width: 100%;
     padding: 15px 5px; 
-    border-radius: 0 0 16px 16px; 
+    border-radius: 0 0 16px 16px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -619,6 +625,9 @@ footer p {
         width: 90%; 
         margin: 20px auto; 
         padding: 0; 
+    }
+    #desktop-search-bar {
+        display: none;
     }
     .mobile-menu-container .header-search-bar .search-input {
         background-color: var(--primary-bg); /* সাদা ব্যাকগ্রাউন্ড */
@@ -799,14 +808,14 @@ footer p {
 
     .subject-grid {
         grid-template-columns: repeat(2, 1fr); /* Exactly 2 columns on mobile */
-        gap: 20px 30px;
+        gap: 20px 27px;
         padding: 0 10px;
         justify-content: center;
     }
     .subject-card {
         height: auto;
         border-width: 3px;
-        min-height: 180px; 
+        min-height: 190px;
         border-radius: 15px;
     }
     .subject-icon-container {

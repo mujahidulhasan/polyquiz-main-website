@@ -20,13 +20,12 @@
                 <i class="fas fa-bars"></i>
             </div>
 
-            {# Changed: Logo is now an image #}
+            {# Logo Image #}
             <a href="{{ url_for('index') }}" class="header-logo-image">
                 <img src="{{ url_for('static', filename='images/logo.png') }}" alt="PolyQuiz Logo"> 
             </a>
 
-            {# REMOVED: mobile-search-icon from here #}
-            {# Full Search Bar (Initially visible on desktop, hidden on mobile) #}
+            {# Full Search Bar (Initially visible on desktop) - This is the main search bar #}
             <div class="header-search-bar" id="desktop-search-bar">
                 <input type="text" id="headerSearch" class="search-input" placeholder="কুইজ খুঁজুন...">
                 <button class="search-button"><i class="fas fa-search"></i></button>
@@ -34,7 +33,7 @@
 
             {# Navigation and Theme Toggle for Mobile Menu #}
             <div class="mobile-menu-container" id="mobile-menu">
-                {# ADDED: Mobile Search Bar inside menu #}
+                {# This is the search bar *inside* the mobile menu #}
                 <div class="header-search-bar mobile-only-search" id="mobile-search-bar">
                     <input type="text" id="mobileHeaderSearch" class="search-input" placeholder="কুইজ খুঁজুন...">
                     <button class="search-button"><i class="fas fa-search"></i></button>
