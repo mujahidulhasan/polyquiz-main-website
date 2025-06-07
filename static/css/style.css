@@ -690,7 +690,7 @@ footer p {
     font-size: 0.8rem;
     position: absolute;
     top: 140px;
-    left: 290px;
+    left: 270px;
 }
 .quiz-question-box h3, .quiz-question-box p {
     color: white; /* White text for question */
@@ -860,7 +860,7 @@ footer p {
         height: 22px !important;
         border-radius: 30px !important;
         position: absolute;
-        right: 318px;
+        right: 300px;
         top: 90px;
         background-color: var(--accent-sky-blue);
     }
