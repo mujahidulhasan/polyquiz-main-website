@@ -63,7 +63,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const menuToggleIcon = document.querySelector('.menu-toggle-icon');
     const mobileMenuContainer = document.getElementById('mobile-menu');
     const desktopSearchBar = document.getElementById('desktop-search-bar'); // Desktop search bar
-    // Removed mobileSearchIcon as it's no longer in header
     const mobileOnlySearchBar = document.getElementById('mobile-search-bar'); // The search bar *inside* mobile menu
 
     if (menuToggleIcon && mobileMenuContainer) {
@@ -71,7 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
             mobileMenuContainer.classList.toggle('active');
             if (mobileMenuContainer.classList.contains('active')) {
                 menuToggleIcon.querySelector('i').classList.replace('fa-bars', 'fa-times'); // Change to X icon
-                // When menu is active, ensure desktop search is hidden
+                // When menu is active, hide desktop search
                 if (desktopSearchBar) desktopSearchBar.style.display = 'none';
                 // Show mobileOnlySearchBar (inside menu)
                 if (mobileOnlySearchBar) mobileOnlySearchBar.style.display = 'flex'; 
@@ -80,10 +79,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 // When menu is inactive, hide mobileOnlySearchBar
                 if (mobileOnlySearchBar) mobileOnlySearchBar.style.display = 'none'; 
 
-                // Revert display based on screen size (handled by CSS media query)
-                if (window.innerWidth > 600) { // If desktop, show desktop search
+                // Restore desktop search bar display (only if on desktop)
+                if (window.innerWidth > 600) { 
                     if (desktopSearchBar) desktopSearchBar.style.display = 'flex';
-                } else { // Ensure desktop search is hidden on mobile
+                } else { // Mobile view: desktop search bar should be hidden
                     if (desktopSearchBar) desktopSearchBar.style.display = 'none'; 
                 }
             }
