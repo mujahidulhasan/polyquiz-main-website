@@ -47,7 +47,7 @@ class Subject(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), unique=True, nullable=False)
     is_active = db.Column(db.Boolean, default=True)
-    image_url = db.Column(db.String(500), nullable=True) 
+    image_url = db.Column(db.String(500), nullable=True) # নিশ্চিত করুন এই লাইনটি আছে
     chapters = db.relationship('Chapter', backref='subject', lazy=True, cascade="all, delete-orphan")
 
     def __repr__(self):
@@ -57,9 +57,9 @@ class Chapter(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     subject_id = db.Column(db.Integer, db.ForeignKey('subject.id'), nullable=False)
-    for_class = db.Column(db.String(50), nullable=True) 
+    for_class = db.Column(db.String(50), nullable=True)
     is_active = db.Column(db.Boolean, default=True)
-    image_url = db.Column(db.String(500), nullable=True) 
+    image_url = db.Column(db.String(500), nullable=True) # নিশ্চিত করুন এই লাইনটি আছে
     questions = db.relationship('QuizQuestion', backref='chapter', lazy=True, cascade="all, delete-orphan")
 
     def __repr__(self):
@@ -86,10 +86,10 @@ class SiteSetting(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     setting_key = db.Column(db.String(100), unique=True, nullable=False)
     setting_value = db.Column(db.Text, nullable=True)
-    
-    # ADDED: For footer/developer info (confirm these are present and correct)
-    developer_name_text = db.Column(db.String(255), nullable=True) 
-    developer_image_url = db.Column(db.String(500), nullable=True) 
+
+    # For footer/developer info (confirm these are present and correct)
+    developer_name_text = db.Column(db.String(255), nullable=True)
+    developer_image_url = db.Column(db.String(500), nullable=True)
     facebook_link = db.Column(db.String(500), nullable=True)
     instagram_link = db.Column(db.String(500), nullable=True)
 

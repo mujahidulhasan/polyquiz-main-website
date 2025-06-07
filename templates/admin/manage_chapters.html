@@ -1,8 +1,9 @@
+{# polyquiz/templates/admin/manage_chapters.html #}
 {% extends "admin/admin_layout.html" %}
 {% block title %}অধ্যায় ম্যানেজ করুন{% endblock %}
 {% block admin_content %}
-    <h2>অধ্যায় ম্যানেজ করুন</h2>
-    <form method="POST" class="form">
+    <h2>অধ্যায় ম্যানেজ করুন</h2> {# CHANGED: Corrected heading for manage_chapters page #}
+    <form method="POST" class="form" enctype="multipart/form-data"> {# ADD enctype #}
         {{ form.csrf_token }}
         <p>
             {{ form.name.label }}<br>
@@ -31,6 +32,13 @@
                 <span style="color: red;">{{ error }}</span>
             {% endfor %}
         </p>
+        <p> {# ADDED: Image file field for chapter #}
+            {{ form.image_file.label }}<br>
+            {{ form.image_file() }}
+            {% for error in form.image_file.errors %}
+                <span style="color: red;">{{ error }}</span>
+            {% endfor %}
+        </p>
         <p>{{ form.submit(value='নতুন অধ্যায় যোগ করুন') }}</p>
     </form>
 
@@ -39,9 +47,10 @@
         <thead>
             <tr>
                 <th>ID</th>
-                <th>অধ্যায় নাম</th>
+                <th>নাম</th>
                 <th>বিষয়</th>
                 <th>ক্লাস</th>
+                <th>ছবি</th> {# ADDED COLUMN #}
                 <th>সক্রিয়</th>
                 <th>অ্যাকশন</th>
             </tr>
@@ -53,6 +62,13 @@
                     <td>{{ chapter.name }}</td>
                     <td>{{ chapter.subject.name }}</td>
                     <td>{{ chapter.for_class }}</td>
+                    <td> {# ADDED CELL #}
+                        {% if chapter.image_url %}
+                            <img src="{{ chapter.image_url }}" alt="{{ chapter.name }} Icon" style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;">
+                        {% else %}
+                            <span style="color: #6c757d;">কোনো ছবি নেই</span>
+                        {% endif %}
+                    </td>
                     <td>{% if chapter.is_active %}হ্যাঁ{% else %}না{% endif %}</td>
                     <td class="actions">
                         <a href="{{ url_for('admin.edit_chapter', chapter_id=chapter.id) }}" class="edit">এডিট</a>

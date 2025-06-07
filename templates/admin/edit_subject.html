@@ -1,8 +1,9 @@
+{# polyquiz/templates/admin/edit_subject.html #}
 {% extends "admin/admin_layout.html" %}
 {% block title %}বিষয় এডিট করুন{% endblock %}
 {% block admin_content %}
     <h2>বিষয় এডিট করুন: {{ subject.name }}</h2>
-    <form method="POST" class="form">
+    <form method="POST" class="form" enctype="multipart/form-data"> {# ADD enctype #}
         {{ form.csrf_token }}
         <p>
             {{ form.name.label }}<br>
@@ -16,6 +17,20 @@
             {% for error in form.is_active.errors %}
                 <span style="color: red;">{{ error }}</span>
             {% endfor %}
+        </p>
+        <p> {# ADDED: Image file field #}
+            {{ form.image_file.label }}<br>
+            {{ form.image_file() }}
+            {% for error in form.image_file.errors %}
+                <span style="color: red;">{{ error }}</span>
+            {% endfor %}
+            {% if subject.image_url %}
+                <div style="margin-top: 10px;">
+                    <img src="{{ subject.image_url }}" alt="{{ subject.name }} Current Icon" style="max-width: 150px; height: auto; border: 1px solid #ddd;">
+                    <br>
+                    <input type="checkbox" name="remove_image" value="true"> বর্তমান ছবি মুছে ফেলুন
+                </div>
+            {% endif %}
         </p>
         <p>{{ form.submit(value='আপডেট করুন') }}</p>
     </form>

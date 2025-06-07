@@ -3,9 +3,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, TextAreaField, IntegerField, SelectField, BooleanField, FloatField
 from wtforms.validators import DataRequired, Email, EqualTo, Length, NumberRange
-from flask_wtf.file import FileField, FileAllowed
-
-# from wtforms import FieldList, FormField # এই দুটি এখন আর দরকার নেই, তাই সরিয়ে দেওয়া হয়েছে
+from flask_wtf.file import FileField, FileAllowed # নিশ্চিত করুন এটি import করা আছে
 
 class LoginForm(FlaskForm):
     username = StringField('ইউজারনেম', validators=[DataRequired(), Length(min=2, max=80)])
@@ -31,7 +29,7 @@ class RegistrationForm(FlaskForm):
 class SubjectForm(FlaskForm):
     name = StringField('বিষয় এর নাম', validators=[DataRequired(), Length(max=100)])
     is_active = BooleanField('সক্রিয় আছে?')
-    image_file = FileField('বিষয় এর আইকন/ছবি আপলোড করুন', validators=[FileAllowed(['png', 'jpg', 'jpeg', 'gif'])])
+    image_file = FileField('বিষয় এর আইকন/ছবি আপলোড করুন', validators=[FileAllowed(['png', 'jpg', 'jpeg', 'gif'])]) # ADDED
     submit = SubmitField('সেভ করুন')
 
 class ChapterForm(FlaskForm):
@@ -46,11 +44,11 @@ class ChapterForm(FlaskForm):
         ('Class 12', 'দ্বাদশ শ্রেণি')
     ], validators=[DataRequired()])
     is_active = BooleanField('সক্রিয় আছে?')
-    image_file = FileField('অধ্যায় এর আইকন/ছবি আপলোড করুন', validators=[FileAllowed(['png', 'jpg', 'jpeg', 'gif'])])
+    image_file = FileField('অধ্যায় এর আইকন/ছবি আপলোড করুন', validators=[FileAllowed(['png', 'jpg', 'jpeg', 'gif'])]) # ADDED
     submit = SubmitField('সেভ করুন')
 
 # --- Quiz Upload Form (for Excel files) ---
-class QuizUploadForm(FlaskForm): 
+class QuizUploadForm(FlaskForm):
     subject_id = SelectField('বিষয় নির্বাচন করুন', coerce=int, validators=[DataRequired()])
     chapter_id = SelectField('অধ্যায় নির্বাচন করুন', coerce=int, validators=[DataRequired()])
     excel_file = FileField('এক্সেল ফাইল আপলোড করুন (.xlsx)', validators=[FileAllowed(['xlsx'])])

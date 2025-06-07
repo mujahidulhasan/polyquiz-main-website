@@ -1,8 +1,9 @@
+{# polyquiz/templates/admin/manage_subjects.html #}
 {% extends "admin/admin_layout.html" %}
 {% block title %}বিষয় ম্যানেজ করুন{% endblock %}
 {% block admin_content %}
     <h2>বিষয় ম্যানেজ করুন</h2>
-    <form method="POST" class="form">
+    <form method="POST" class="form" enctype="multipart/form-data"> {# ADD enctype #}
         {{ form.csrf_token }}
         <p>
             {{ form.name.label }}<br>
@@ -17,6 +18,13 @@
                 <span style="color: red;">{{ error }}</span>
             {% endfor %}
         </p>
+        <p> {# ADDED: Image file field #}
+            {{ form.image_file.label }}<br>
+            {{ form.image_file() }}
+            {% for error in form.image_file.errors %}
+                <span style="color: red;">{{ error }}</span>
+            {% endfor %}
+        </p>
         <p>{{ form.submit(value='নতুন বিষয় যোগ করুন') }}</p>
     </form>
 
@@ -26,6 +34,7 @@
             <tr>
                 <th>ID</th>
                 <th>নাম</th>
+                <th>ছবি</th> {# ADDED COLUMN #}
                 <th>সক্রিয়</th>
                 <th>অ্যাকশন</th>
             </tr>
@@ -35,6 +44,13 @@
                 <tr>
                     <td>{{ subject.id }}</td>
                     <td>{{ subject.name }}</td>
+                    <td> {# ADDED CELL #}
+                        {% if subject.image_url %}
+                            <img src="{{ subject.image_url }}" alt="{{ subject.name }} Icon" style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;">
+                        {% else %}
+                            <span style="color: #6c757d;">কোনো ছবি নেই</span>
+                        {% endif %}
+                    </td>
                     <td>{% if subject.is_active %}হ্যাঁ{% else %}না{% endif %}</td>
                     <td class="actions">
                         <a href="{{ url_for('admin.edit_subject', subject_id=subject.id) }}" class="edit">এডিট</a>

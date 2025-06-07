@@ -458,7 +458,7 @@ footer p {
     align-items: center;
     padding: 20px; 
     border: none;
-    border-radius: 50%;
+    border-radius: 16px;
     flex-grow: 1;
     background-color: white; 
     margin-top: 15px;
@@ -466,7 +466,7 @@ footer p {
 .subject-icon {
     max-width: 80%;
     max-height: 120px;
-    border-radius: 50%;
+    border-radius: 16px;
     object-fit: contain;
 }
 .subject-name-area {
