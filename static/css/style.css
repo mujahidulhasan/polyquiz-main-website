@@ -722,7 +722,7 @@ footer p {
         height: 22px !important;
         border-radius: 30px !important;
         position: absolute;
-        right: 330px;
+        right: 318px;
         top: 90px;
         background-color: var(--accent-sky-blue);
     }
@@ -908,9 +908,6 @@ footer p {
         gap: 20px 27px;
         padding: 0 10px;
         justify-content: center;
-        position: absolute;
-        top: 155px;
-        right: 35px;
     }
     .subject-card {
         height: 130px;
