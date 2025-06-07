@@ -624,7 +624,9 @@ footer p {
         display: flex; /* মেনুর ভেতরে সার্চ বক্স দেখায় */
         width: 90%; 
         margin: 20px auto; 
-        padding: 0; 
+        padding-top: 110px;
+        justify-content: flex-start;
+        margin-bottom: 200px;
     }
     #desktop-search-bar {
         display: none;
@@ -639,9 +641,11 @@ footer p {
     }
     .mobile-menu-container .header-search-bar .search-button {
         color: var(--accent-sky-blue);
+        margin-right: -40px;
     }
     .header-logo-image img {
         height: 30px;  /* মোবাইলে লোগোর আকার ছোট করুন */
+        margin-right: 50px;
     }
     .header-search-bar {
         display: none;
@@ -652,7 +656,7 @@ footer p {
         align-items: center;
         text-align: center;
         margin-top: auto;
-        padding: none;
+        padding: 10px 0;
         width: 100%;
         background-color: var(--primary-bg); /* CHANGED: সাদা ব্যাকগ্রাউন্ড হবে */
          /* CHANGED: হালকা বর্ডার */
@@ -668,12 +672,14 @@ footer p {
         border-radius: 50%;
         border: 3px solid var(--accent-sky-blue);
         object-fit: cover;
-        margin-bottom: 10px;
+        margin-bottom: 400px;
     }
     .developed-by-section .social-links {
         display: flex;
-        gap: 15px;
-        margin-top: 10px;
+        gap: 10px;
+        position: absolute;
+        top: 680px;
+        bottom: 0px;
     }
     .developed-by-section .social-links a {
         color: var(--accent-sky-blue);
@@ -689,7 +695,7 @@ footer p {
         display: block; /* বার্গার মেনু আইকনকে দেখায় */
         order: 1;
         margin-right: 0px;
-        margin-left: 10px;
+        margin-left: 50px;
     }
     .mobile-menu-container {
         display: none; /* মোবাইলে ডিফল্টভাবে লুকানো থাকে */
@@ -736,16 +742,18 @@ footer p {
         flex-direction: column;
         align-items: center;
         width: 100%;
-        margin-top: 20px;
+        margin-bottom: 300px;
+        margin-top: -180px;
     }
     nav.main-nav ul li {
-        margin: 10px 0;
+        margin: px 0;
         width: 80%; /* মেনুর আইটেমগুলোকে পুরো প্রস্থ জুড়ে রাখে */
         text-align: center;
     }
     
     .theme-toggle {
         margin-left: 20px;
+        margin-top: -190px;
         width: 80%;
     }
     .theme-toggle button i {
@@ -768,6 +776,15 @@ footer p {
         background-color: var(--accent-light-gray); /* হালকা ধূসর হোভার */
         color: var(--secondary-dark-blue); /* হোভারে লেখার রঙ */
     }
+    .mobile-menu-container nav.main-nav ul li a { 
+        padding: 10px 0;
+        color: var(--accent-sky-blue); /* CHANGED: হোম বাটনের টেক্সট কালার */
+        background-color: transparent;
+        border: none;
+        border-radius: 0;
+        text-decoration: none;
+        font-weight: bold;
+    }
     nav.main-nav ul li a {
         padding: 10px 0;
         color: var(--accent-sky-blue);
@@ -786,7 +803,7 @@ footer p {
         margin: 5px 10px;
     }
     .theme-toggle {
-        margin-top: 20px;
+        margin-top: -200px;
         width: 80%;
     }
     
@@ -800,6 +817,7 @@ footer p {
         border-width: 3px;
         font-size: 0.8em; 
         margin-top: 8px; 
+        margin-bottom: 20px;
         width: 170px;
         height: 20px;
         justify-content: center;
@@ -815,7 +833,7 @@ footer p {
     .subject-card {
         height: auto;
         border-width: 3px;
-        min-height: 190px;
+        min-height: 180px;
         border-radius: 15px;
     }
     .subject-icon-container {
