@@ -115,7 +115,7 @@ def manage_chapters():
     if form.validate_on_submit():
         chapter_name = form.name.data
         subject_id = form.subject_id.data
-        for_class = form.for_class.data
+        #for_class = form.for_class.data
         is_active = form.is_active.data
         image_file = form.image_file.data # Get file from form
 
@@ -149,7 +149,7 @@ def edit_chapter(chapter_id):
     if form.validate_on_submit():
         chapter.name = form.name.data
         chapter.subject_id = form.subject_id.data
-        chapter.for_class = form.for_class.data
+        #chapter.for_class = form.for_class.data
         chapter.is_active = form.is_active.data
         image_file = form.image_file.data
 

@@ -2,7 +2,7 @@
 {% extends "admin/admin_layout.html" %}
 {% block title %}অধ্যায় ম্যানেজ করুন{% endblock %}
 {% block admin_content %}
-    <h2>অধ্যায় ম্যানেজ করুন</h2> {# CHANGED: Corrected heading for manage_chapters page #}
+    <h2>অধ্যায় ম্যানেজ করুন</h2>
     <form method="POST" class="form" enctype="multipart/form-data"> {# ADD enctype #}
         {{ form.csrf_token }}
         <p>
@@ -19,6 +19,8 @@
                 <span style="color: red;">{{ error }}</span>
             {% endfor %}
         </p>
+        {# REMOVED: Class selection field #}
+        {#
         <p>
             {{ form.for_class.label }}<br>
             {{ form.for_class() }}
@@ -26,6 +28,7 @@
                 <span style="color: red;">{{ error }}</span>
             {% endfor %}
         </p>
+        #}
         <p>
             {{ form.is_active() }} {{ form.is_active.label }}
             {% for error in form.is_active.errors %}
@@ -49,8 +52,9 @@
                 <th>ID</th>
                 <th>নাম</th>
                 <th>বিষয়</th>
-                <th>ক্লাস</th>
-                <th>ছবি</th> {# ADDED COLUMN #}
+                {# REMOVED: Class column header #}
+                {# <th>ক্লাস</th> #}
+                <th>ছবি</th>
                 <th>সক্রিয়</th>
                 <th>অ্যাকশন</th>
             </tr>
@@ -61,8 +65,9 @@
                     <td>{{ chapter.id }}</td>
                     <td>{{ chapter.name }}</td>
                     <td>{{ chapter.subject.name }}</td>
-                    <td>{{ chapter.for_class }}</td>
-                    <td> {# ADDED CELL #}
+                    {# REMOVED: Class column data #}
+                    {# <td>{{ chapter.for_class }}</td> #}
+                    <td> 
                         {% if chapter.image_url %}
                             <img src="{{ chapter.image_url }}" alt="{{ chapter.name }} Icon" style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;">
                         {% else %}

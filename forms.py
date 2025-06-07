@@ -35,14 +35,6 @@ class SubjectForm(FlaskForm):
 class ChapterForm(FlaskForm):
     name = StringField('অধ্যায় এর নাম', validators=[DataRequired(), Length(max=100)])
     subject_id = SelectField('বিষয় নির্বাচন করুন', coerce=int, validators=[DataRequired()])
-    for_class = SelectField('ক্লাস নির্বাচন করুন', choices=[
-        ('', 'নির্বাচন করুন'),
-        ('Class 8', 'অষ্টম শ্রেণি'),
-        ('Class 9', 'নবম শ্রেণি'),
-        ('Class 10', 'দশম শ্রেণি'),
-        ('Class 11', 'একাদশ শ্রেণি'),
-        ('Class 12', 'দ্বাদশ শ্রেণি')
-    ], validators=[DataRequired()])
     is_active = BooleanField('সক্রিয় আছে?')
     image_file = FileField('অধ্যায় এর আইকন/ছবি আপলোড করুন', validators=[FileAllowed(['png', 'jpg', 'jpeg', 'gif'])]) # ADDED
     submit = SubmitField('সেভ করুন')
