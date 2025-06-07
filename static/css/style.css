@@ -658,7 +658,7 @@ footer p {
         margin-top: auto;
         padding: 10px 0;
         position: absolute;
-        top: 550px;
+        top: 410px;
         width: 100%;
         background-color: var(--primary-bg); /* CHANGED: সাদা ব্যাকগ্রাউন্ড হবে */
          /* CHANGED: হালকা বর্ডার */
@@ -744,7 +744,7 @@ footer p {
         flex-direction: column;
         width: 100%;
         position: absolute;
-        top: 250px;
+        top: 210px;
         right: -5px;
     }
     nav.main-nav ul li {
@@ -756,7 +756,7 @@ footer p {
     .theme-toggle {
         margin-left: 20px;
         position: absolute;
-        top: 650px;
+        top: 570px;
         width: 80%;
     }
     .theme-toggle button i {
