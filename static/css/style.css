@@ -834,7 +834,8 @@ footer p {
         justify-content: center;
     }
     .subject-card {
-        height: auto;
+        height: 130px;
+        width: 140px;
         border-width: 3px;
         min-height: 180px;
         border-radius: 15px;
