@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, session, request, jsonify
+from flask import Blueprint, render_template, redirect, url_for, flash, session, request, jsonify 
 from flask_login import login_required, current_user
 from models import User, AdminUser, Subject, Chapter, QuizQuestion, UserQuizAttempt, db
 import json
@@ -55,10 +55,10 @@ def play_quiz(chapter_id):
 
     if not questions:
         logger.info(f"No questions found for chapter ID: {chapter_id}. Redirecting.")
-        flash(f'দুঃখিত, "{chapter.name}" অধ্যায়ের জন্য কোনো প্রশ্ন উপলব্ধ নেই। অ্যাডমিনকে প্রশ্ন যোগ করতে বলুন।', 'warning')
+        flash(f'দুঃখিত, "{chapter.name}" অধ্যায়ের জন্য কোনো প্রশ্ন উপলব্ধ নেই। অ্যাডমিনকে প্রশ্ন যোগ করতে বলুন।', 'no-question-notice') 
         return redirect(url_for('user.select_chapter', subject_id=chapter.subject.id))
     
-    logger.info(f"Found {len(questions)} questions for chapter ID: {chapter_id}. Setting session data.")
+    logger.info(f"Found {len(questions)} questions for chapter ID: {chapter_id}. Starting quiz.")
 
     quiz_data_for_session = []
     for q in questions:
@@ -81,9 +81,6 @@ def play_quiz(chapter_id):
     session['user_answers'] = []
     session['quiz_chapter_id'] = chapter.id
     session['quiz_total_score'] = 0.0
-    
-    logger.info(f"Session 'current_quiz' set with {len(session['current_quiz'])} questions.") # ADDED LOG
-    logger.info(f"Session 'current_question_index' set to {session['current_question_index']}.") # ADDED LOG
 
     csrf_token = generate_csrf() 
     
@@ -96,9 +93,9 @@ def save_quiz_progress():
     # Verify CSRF token manually as it's an AJAX request
     if not request.headers.get('X-CSRFToken'):
         logger.warning("CSRF token missing in AJAX request headers.")
-        return jsonify({'status': 'error', 'message': 'CSRF টোকেন অনুপস্থিত।'}), 403 # Return 403 Forbidden
+        return jsonify({'status': 'error', 'message': 'CSRF টoken অনুপস্থিত।'}), 403 
     
-    try:
+    try: 
         data = request.get_json()
         
         quiz_data = session.get('current_quiz')
@@ -108,14 +105,14 @@ def save_quiz_progress():
 
         if not quiz_data or current_question_index is None or user_answers is None:
             logger.error("save_quiz_progress: Quiz data not found in session or invalid state.")
-            return jsonify({'status': 'error', 'message': 'কুইজ ডেটা সেশনে পাওয়া যায়নি বা সেশন মেয়াদোত্তীর্ণ।'}, 400) # Ensure 400 status is returned
-            
+            return jsonify({'status': 'error', 'message': 'কুইজ ডেটা সেশনে পাওয়া যায়নি বা সেশন মেয়াদোত্তীর্ণ।'}), 400
+
         question_id = data.get('question_id')
         user_choice = data.get('user_choice')
         
         if current_question_index >= len(quiz_data) or quiz_data[current_question_index]['id'] != question_id:
             logger.error(f"save_quiz_progress: Session question ID mismatch. Expected {quiz_data[current_question_index]['id']}, Got {question_id}. Current index {current_question_index}.")
-            return jsonify({'status': 'error', 'message': 'সেশনের প্রশ্ন আইডি মিলছে না। সম্ভবত ব্রাউজার রিলোড হয়েছে।'}, 400)
+            return jsonify({'status': 'error', 'message': 'সেশনের প্রশ্ন আইডি মিলছে না। সম্ভবত ব্রাউজার রিলোড হয়েছে।'}), 400
 
         question_details = quiz_data[current_question_index]
         is_correct = (user_choice == question_details['correct_option_number']) if user_choice is not None else False
@@ -134,7 +131,7 @@ def save_quiz_progress():
             'options': [question_details['option1'], question_details['option2'], question_details['option3'], question_details['option4']],
             'user_choice': user_choice,
             'correct_option_number': question_details['correct_option_number'],
-            'is_correct': is_correct,
+            'is_correct': is_correct, 
             'points_earned': points_earned,
             'media_url': question_details['media_url']
         })
@@ -158,8 +155,7 @@ def save_quiz_progress():
             new_user_total_points = current_user.total_points
             new_user_level = current_user.current_level
         
-        logger.info(f"Progress saved successfully. Quiz finished: {session['current_question_index'] >= len(quiz_data)}")
-        return jsonify({ # Ensure jsonify is used for successful response
+        return jsonify({ 
             'status': 'success', 
             'message': 'প্রগতি সেভ করা হয়েছে।', 
             'new_total_points': new_user_total_points, 
@@ -167,9 +163,9 @@ def save_quiz_progress():
             'quiz_finished': session['current_question_index'] >= len(quiz_data)
         }), 200
 
-    except Exception as e:
-        db.session.rollback()
-        logger.exception("Error during save_quiz_progress processing:") # Log full traceback
+    except Exception as e: 
+        db.session.rollback() 
+        logger.exception("Error during save_quiz_progress processing:") 
         return jsonify({'status': 'error', 'message': f'সার্ভার প্রক্রিয়াকরণে ত্রুটি: {str(e)}'}), 500
 
 @user_bp.route('/quiz_result/<int:chapter_id>')

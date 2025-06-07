@@ -287,6 +287,33 @@ main {
     margin-bottom: 10px;
     border-radius: 5px;
 }
+.flashes .no-question-notice {
+    background-color: white; 
+    border: 2px solid var(--accent-sky-blue); 
+    color: var(--primary-text); 
+    padding: 20px; 
+    margin: 20px auto; 
+    max-width: 600px; 
+    border-radius: 8px; 
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1); 
+    font-size: 1.1em;
+    font-weight: bold;
+    text-align: center;
+    animation: fadeIn 0.5s ease-out;
+
+    /* CHANGED: মেসেজকে স্ক্রিনের উপর float করাতে */
+    position: fixed; /* এটিকে স্ক্রিনের সাপেক্ষে ফিক্সড পজিশনে রাখে */
+    top: 20px; /* স্ক্রিনের উপর থেকে 20px নিচে */
+    left: 50%; /* বাম দিক থেকে 50% এ */
+    transform: translateX(-50%); /* নিজেকে 50% বামে সরিয়ে মাঝখানে আনতে */
+    z-index: 1000; /* নিশ্চিত করতে এটি অন্যান্য কন্টেন্টের উপরে থাকে */
+}
+
+/* Optional: Add a fade-in animation */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
 .flashes .success { background-color: #d4edda; color: #155724; }
 .flashes .error, .flashes .danger { background-color: #f8d7da; color: #721c24; }
 .flashes .info { background-color: #d1ecf1; color: #0c5460; }
@@ -603,6 +630,7 @@ footer p {
 .back-button-text {
     display: none; /* ডিফল্টভাবে টেক্সট লুকাতে */
 }
+
 /* --- Responsive Adjustments --- */
 @media (max-width: 1200px) {
     .container {
@@ -665,6 +693,9 @@ footer p {
     }
     #desktop-search-bar {
         display: none;
+    }
+    .flashes .no-question-notice {
+        width: 200px;
     }
     .mobile-menu-container .header-search-bar .search-input {
         background-color: var(--primary-bg); /* সাদা ব্যাকগ্রাউন্ড */
@@ -877,6 +908,9 @@ footer p {
         gap: 20px 27px;
         padding: 0 10px;
         justify-content: center;
+        position: absolute;
+        top: 155px;
+        right: 35px;
     }
     .subject-card {
         height: 130px;

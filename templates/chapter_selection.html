@@ -5,13 +5,13 @@
 
 {% block content %}
     <section class="subject-selection-section"> {# Reusing section style from index.html #}
-        {# CHANGED: Back Button and Title in one row for better alignment #}
+        {# BACK BUTTON AND TITLE ROW #}
         <div class="chapter-header-row">
             <a href="{{ url_for('index') }}" class="button back-button">
-                <i class="fas fa-arrow-left"></i> <span class="back-button-text">হোম</span> {# Span for text to hide it later #}
+                <i class="fas fa-arrow-left"></i> <span class="back-button-text">হোম</span> 
             </a>
-            <div class="section-title-box"> {# Reusing box for the title #}
-                <h2 class="section-title">{{ subject.name }} এর অধ্যায়সমূহ</h2> {# Changed title to reflect subject chapters #}
+            <div class="section-title-box chapter-title-box"> 
+                <h2 class="section-title">{{ subject.name }} এর অধ্যায়সমূহ</h2> 
             </div>
         </div>
         
@@ -23,19 +23,20 @@
                         <div class="subject-card"> {# Reusing subject-card style #}
                             <div class="subject-icon-area"> {# Reusing icon area style #}
                                 {% if chapter.image_url %}
-                                    <img src="{{ chapter.image_url }}" alt="{{ chapter.name }} Icon" class="subject-icon"> {# Using chapter image_url #}
+                                    <img src="{{ chapter.image_url }}" alt="{{ chapter.name }} Icon" class="subject-icon"> 
                                 {% else %}
-                                    <img src="{{ url_for('static', filename='images/default_chapter_icon.png') }}" alt="Default Icon" class="subject-icon"> {# Default for chapters #}
+                                    <img src="{{ url_for('static', filename='images/default_chapter_icon.png') }}" alt="Default Icon" class="subject-icon"> 
                                 {% endif %}
                             </div>
                             <div class="subject-name-area"> {# Reusing name area style #}
-                                <h3>{{ chapter.name }}</h3> {# Display chapter name #}
+                                <h3>{{ chapter.name }}</h3> 
                             </div>
                         </div>
                     </a>
                 {% endfor %}
             {% else %}
-                <p class="no-content-message">এই বিষয়ের জন্য কোনো অধ্যায় উপলব্ধ নেই। অ্যাডমিন প্যানেল থেকে অধ্যায় যোগ করুন।</p>
+                {# REMOVED: no-question-message-container as flash message will handle it #}
+                <p class="no-content-message" style="display: none;">এই বিষয়ের জন্য কোনো অধ্যায় উপলব্ধ নেই। অ্যাডমিন প্যানেল থেকে অধ্যায় যোগ করুন।</p> {# Hiding this, as it's handled by flash now #}
             {% endif %}
         </div>
     </section>
