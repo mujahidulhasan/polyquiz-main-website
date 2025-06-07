@@ -391,6 +391,30 @@ footer p {
     margin-bottom: 40px;
     padding-top: 20px; /* Adjust padding-top here as needed to move content down */
 }
+.back-button-container {
+    text-align: left; /* বাটনকে বাম দিকে রাখতে */
+    margin-bottom: 20px; /* বাটনের নিচে স্পেস */
+}
+.back-button {
+    background-color: var(--accent-sky-blue); /* CHANGED: ওয়েবসাইটের কালার */
+    color: white; /* CHANGED: সাদা টেক্সট/আইকন */
+    padding: 10px 10px; /* CHANGED: প্যাডিং অ্যাডজাস্ট করুন, শুধু আইকনের জন্য */
+    border-radius: 30px; /* CHANGED: একদম রাউন্ড করতে */
+    text-decoration: none; /* আন্ডারলাইন সরাতে */
+    display: inline-flex;
+    position: absolute;
+    top: 115px;
+    right: 1120px;
+    align-items: center;
+    justify-content: center; /* আইকনকে মাঝখানে আনতে */
+    width: 60px; /* CHANGED: নির্দিষ্ট প্রস্থ */
+    height: 23px; /* CHANGED: নির্দিষ্ট উচ্চতা */
+    transition: background-color 0.3s ease;
+    font-size: 1.2em; /* আইকনের সাইজ অ্যাডজাস্ট করুন */
+}
+.back-button:hover {
+    background-color: var(--secondary-dark-blue);
+}
 .section-title-box { /* For "কুইজের বিষয় নির্বাচন করুন" */
     display: flex; 
     justify-content: center;
@@ -516,6 +540,14 @@ footer p {
     display: none; /* Desktop: Hidden by default */
     /* ... অন্যান্য স্টাইল ... */
 }
+.chapter-header-row {
+    display: flex;
+    justify-content: space-between; /* বাটন ও টাইটেল বক্সকে দুই পাশে রাখতে */
+    align-items: center; /* উল্লম্বভাবে মাঝখানে রাখতে */
+    margin-bottom: 30px; /* নিচের দিকে স্পেস */
+    padding: 0 10px; /* দুই পাশে সামান্য প্যাডিং */
+}
+
 .menu-toggle-icon {
     display: none; /* Desktop: Hidden by default */
     /* ... অন্যান্য স্টাইল ... */
@@ -567,6 +599,9 @@ footer p {
 /* নিশ্চিত করুন যে .mobile-only-search ডেস্কটপে display: none আছে */
 .mobile-only-search {
     display: none; /* Desktop: Hidden by default */
+}
+.back-button-text {
+    display: none; /* ডিফল্টভাবে টেক্সট লুকাতে */
 }
 /* --- Responsive Adjustments --- */
 @media (max-width: 1200px) {
@@ -649,6 +684,16 @@ footer p {
     }
     .header-search-bar {
         display: none;
+    }
+    .back-button { /* মোবাইলে বাটনকে শুধু আইকন হিসেবে দেখাতে */
+        padding: 10px !important; /* প্যাডিং অ্যাডজাস্ট করুন */
+        width: 30px !important;
+        height: 22px !important;
+        border-radius: 30px !important;
+        position: absolute;
+        right: 330px;
+        top: 90px;
+        background-color: var(--accent-sky-blue);
     }
     .developed-by-section {
         display: flex; /* মোবাইলে দেখাবে */

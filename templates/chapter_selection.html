@@ -1,25 +1,42 @@
 {# polyquiz/templates/chapter_selection.html #}
 {% extends "layout.html" %}
-{% block title %}{{ subject.name }} - অধ্যায় নির্বাচন{% endblock %}
+
+{% block title %}{{ subject.name }} এর অধ্যায়সমূহ{% endblock %}
+
 {% block content %}
-    <h2>{{ subject.name }} - অধ্যায় নির্বাচন করুন</h2>
-    <div class="chapter-list">
-        {% if chapters %}
-            {% for chapter in chapters %}
-                <div class="chapter-card">
-                    {% if chapter.image_url %}
-                        <img src="{{ chapter.image_url }}" alt="{{ chapter.name }} Icon" class="chapter-icon">
-                    {% else %}
-                        <img src="{{ url_for('static', filename='images/default_chapter_icon.png') }}" alt="Default Icon" class="chapter-icon"> {# Use a default icon if none uploaded #}
-                    {% endif %}
-                    <h3>{{ chapter.name }} (ক্লাস: {{ chapter.for_class }})</h3>
-                    {# CHANGED: Link to the new user.play_quiz route #}
-                    <a href="{{ url_for('user.play_quiz', chapter_id=chapter.id) }}" class="button">কুইজ খেলুন</a> 
-                </div>
-            {% endfor %}
-        {% else %}
-            <p>এই বিষয়ে কোনো অধ্যায় উপলব্ধ নেই। অ্যাডমিনকে অধ্যায় যোগ করতে বলুন।</p>
-        {% endif %}
-    </div>
-    <p><a href="{{ url_for('index') }}">অন্য বিষয় নির্বাচন করুন</a></p>
+    <section class="subject-selection-section"> {# Reusing section style from index.html #}
+        {# CHANGED: Back Button and Title in one row for better alignment #}
+        <div class="chapter-header-row">
+            <a href="{{ url_for('index') }}" class="button back-button">
+                <i class="fas fa-arrow-left"></i> <span class="back-button-text">হোম</span> {# Span for text to hide it later #}
+            </a>
+            <div class="section-title-box"> {# Reusing box for the title #}
+                <h2 class="section-title">{{ subject.name }} এর অধ্যায়সমূহ</h2> {# Changed title to reflect subject chapters #}
+            </div>
+        </div>
+        
+        <div class="subject-grid"> {# Reusing subject-grid for chapters #}
+            {% if chapters %}
+                {% for chapter in chapters %}
+                    {# Make entire chapter card clickable #}
+                    <a href="{{ url_for('user.play_quiz', chapter_id=chapter.id) }}" class="subject-card-link"> 
+                        <div class="subject-card"> {# Reusing subject-card style #}
+                            <div class="subject-icon-area"> {# Reusing icon area style #}
+                                {% if chapter.image_url %}
+                                    <img src="{{ chapter.image_url }}" alt="{{ chapter.name }} Icon" class="subject-icon"> {# Using chapter image_url #}
+                                {% else %}
+                                    <img src="{{ url_for('static', filename='images/default_chapter_icon.png') }}" alt="Default Icon" class="subject-icon"> {# Default for chapters #}
+                                {% endif %}
+                            </div>
+                            <div class="subject-name-area"> {# Reusing name area style #}
+                                <h3>{{ chapter.name }}</h3> {# Display chapter name #}
+                            </div>
+                        </div>
+                    </a>
+                {% endfor %}
+            {% else %}
+                <p class="no-content-message">এই বিষয়ের জন্য কোনো অধ্যায় উপলব্ধ নেই। অ্যাডমিন প্যানেল থেকে অধ্যায় যোগ করুন।</p>
+            {% endif %}
+        </div>
+    </section>
 {% endblock %}
