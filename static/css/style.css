@@ -624,9 +624,8 @@ footer p {
         display: flex; /* মেনুর ভেতরে সার্চ বক্স দেখায় */
         width: 90%; 
         margin: 20px auto; 
-        padding-top: 110px;
+        padding-top: 60px;
         justify-content: flex-start;
-        margin-bottom: 200px;
     }
     #desktop-search-bar {
         display: none;
@@ -657,6 +656,8 @@ footer p {
         text-align: center;
         margin-top: auto;
         padding: 10px 0;
+        position: absolute;
+        top: 170px;
         width: 100%;
         background-color: var(--primary-bg); /* CHANGED: সাদা ব্যাকগ্রাউন্ড হবে */
          /* CHANGED: হালকা বর্ডার */
@@ -695,7 +696,7 @@ footer p {
         display: block; /* বার্গার মেনু আইকনকে দেখায় */
         order: 1;
         margin-right: 0px;
-        margin-left: 50px;
+        margin-left: 30px;
     }
     .mobile-menu-container {
         display: none; /* মোবাইলে ডিফল্টভাবে লুকানো থাকে */
