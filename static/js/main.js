@@ -89,8 +89,9 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+
     // --- Hide/show elements based on window resize (for desktop to mobile transition) ---
-    window.addEventListener('resize', () => {
+    window.addEventListener('resize', () => { // Line 237 (start of this block)
         if (window.innerWidth > 600) { // Desktop view
             // Hide mobile-only elements on desktop
             if (mobileMenuContainer) mobileMenuContainer.classList.remove('active');
@@ -118,6 +119,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 mobileOnlySearchBar.style.display = 'none';
             }
         }
-    });
+    }); // Line 253, closing brace of window.addEventListener('resize')
 
-});
+}); // Line 254, closing brace of document.addEventListener('DOMContentLoaded')

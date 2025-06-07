@@ -2,41 +2,48 @@
 {% extends "layout.html" %}
 {% block title %}{{ chapter.name }} - কুইজ খেলুন{% endblock %}
 {% block content %}
-    <h2>{{ chapter.name }} - কুইজ খেলুন</h2>
-    <div id="quiz-container">
-        <div id="question-display" style="border: 1px solid #ccc; padding: 20px; margin-bottom: 20px; border-radius: 8px;">
-            <h3 id="question-number"></h3>
-            <p id="question-text"></p>
-            <div id="media-display" style="margin-bottom: 15px; text-align: center;">
+    <section class="quiz-play-section">
+        <h2 class="quiz-page-title">{{ subject.name }} - {{ chapter.name }}</h2> {# Subject and Chapter Name #}
+
+        <div id="quiz-container">
+            <div id="question-display" class="quiz-question-box"> {# Question Box #}
+                <h3 id="question-number"></h3>
+                <p id="question-text"></p>
+                <div id="media-display">
+                    </div>
+            </div>
+
+            <div id="options-container" class="quiz-options-grid"> {# Options Grid #}
                 </div>
-            <div id="options-container">
-                </div>
+
+            <div id="quiz-navigation" class="quiz-navigation-buttons"> {# Navigation Buttons #}
+                <button id="show-answer-button" class="quiz-button show-answer-button" style="display: none;"><i class="fas fa-lightbulb"></i> সঠিক উত্তর</button> {# Show Answer Button #}
+                <button id="next-question-button" class="quiz-button next-question-button"><i class="fas fa-arrow-right"></i> পরবর্তী প্রশ্ন</button> {# Next Question Button #}
+            </div>
+
             {% if current_user.is_authenticated %}
-                <p>আপনার মোট পয়েন্ট: <span id="user-total-points">{{ current_user.total_points | round(2) }}</span></p>
-                <p>বর্তমান লেভেল: <span id="user-current-level">{{ current_user.current_level }}</span></p>
+                <div class="user-quiz-info">
+                    <p>আপনার মোট পয়েন্ট: <span id="user-total-points">{{ current_user.total_points | round(2) }}</span></p>
+                    <p>বর্তমান লেভেল: <span id="user-current-level">{{ current_user.current_level }}</span></p>
+                </div>
             {% endif %}
         </div>
-        <div id="quiz-navigation">
-            <button id="next-question-button" class="button" style="padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">পরবর্তী প্রশ্ন</button>
-        </div>
-    </div>
+    </section>
 {% endblock %}
 
 {% block scripts %}
     <script type="text/javascript">
         document.addEventListener('DOMContentLoaded', function() {
-            // Get quiz data and current index from Flask session. This is JSON.
-            // Ensure values are properly converted to JSON for JavaScript
             const quizData = JSON.parse('{{ session.current_quiz | tojson | safe }}'); 
             let currentQuestionIndex = JSON.parse('{{ session.current_question_index | tojson | safe }}');
             let userAnswers = JSON.parse('{{ session.user_answers | tojson | safe }}');
             let currentQuizScore = JSON.parse('{{ session.get("quiz_total_score", 0.0) | tojson | safe }}');
             
-            const chapterId = JSON.parse('{{ chapter.id | tojson | safe }}'); // Pass chapter ID for JS
-            
-            // Pass current_user data to JavaScript if authenticated
+            const chapterId = JSON.parse('{{ chapter.id | tojson | safe }}'); 
+            const subjectId = JSON.parse('{{ subject.id | tojson | safe }}'); 
+
             const isAuthenticated = {{ current_user.is_authenticated | tojson }};
-            let initialUserTotalPoints = {{ current_user.total_points | default(0.0) | tojson }};
+            let initialUserTotalPoints = {{ current_user.total_points | default(0.0) | tojson }}; 
             let initialUserCurrentLevel = {{ current_user.current_level | default(1) | tojson }};
 
             const questionNumberDisplay = document.getElementById('question-number');
@@ -44,24 +51,38 @@
             const mediaDisplay = document.getElementById('media-display');
             const optionsContainer = document.getElementById('options-container');
             const nextButton = document.getElementById('next-question-button');
+            const showAnswerButton = document.getElementById('show-answer-button'); 
             const userTotalPointsDisplay = document.getElementById('user-total-points');
             const userCurrentLevelDisplay = document.getElementById('user-current-level');
+
+            let selectedOptionValue = null; 
+            let isAnswerSubmitted = false; // Flag to track if answer has been sent to server for current question
 
             function displayQuestion() {
                 if (currentQuestionIndex < quizData.length) {
                     const question = quizData[currentQuestionIndex];
                     questionNumberDisplay.textContent = `প্রশ্ন ${currentQuestionIndex + 1} / ${quizData.length}`;
                     questionTextDisplay.textContent = question.question_text;
-                    optionsContainer.innerHTML = ''; // Clear previous options
-                    mediaDisplay.innerHTML = ''; // Clear previous media
+                    optionsContainer.innerHTML = ''; 
+                    mediaDisplay.innerHTML = ''; 
+                    selectedOptionValue = null; 
+                    isAnswerSubmitted = false; // Reset flag for new question
 
-                    // Display media if available
+                    showAnswerButton.style.display = 'none'; 
+                    nextButton.style.display = 'block'; 
+                    nextButton.textContent = "পরবর্তী প্রশ্ন"; 
+
+                    optionsContainer.querySelectorAll('.quiz-option').forEach(opt => {
+                        opt.style.pointerEvents = 'auto'; 
+                        opt.classList.remove('selected', 'correct-answer', 'wrong-answer'); 
+                    });
+
                     if (question.media_url) {
                         const fileExtension = question.media_url.split('.').pop().toLowerCase();
                         if (['png', 'jpg', 'jpeg', 'gif'].includes(fileExtension)) {
-                            mediaDisplay.innerHTML = `<img src="${question.media_url}" alt="Question Media" style="max-width: 100%; height: auto; border-radius: 5px;">`;
+                            mediaDisplay.innerHTML = `<img src="${question.media_url}" alt="Question Media">`;
                         } else if (['mp4', 'webm'].includes(fileExtension)) {
-                            mediaDisplay.innerHTML = `<video controls style="max-width: 100%; height: auto; border-radius: 5px;"><source src="${question.media_url}" type="video/${fileExtension}"></video>`;
+                            mediaDisplay.innerHTML = `<video controls><source src="${question.media_url}" type="video/${fileExtension}"></video>`;
                         }
                     }
 
@@ -69,132 +90,164 @@
                     options.forEach((optionText, index) => {
                         const optionDiv = document.createElement('div');
                         optionDiv.classList.add('quiz-option');
-                        const optionId = `option_${currentQuestionIndex}_${index + 1}`;
+                        optionDiv.dataset.value = index + 1; 
                         optionDiv.innerHTML = `
-                            <input type="radio" id="${optionId}" name="quiz_option" value="${index + 1}" required>
-                            <label for="${optionId}">${optionText}</label>
+                            <span>${optionText}</span>
                         `;
                         optionsContainer.appendChild(optionDiv);
+
+                        optionDiv.addEventListener('click', function() {
+                            if (isAnswerSubmitted) return; // Prevent selection after first answer check
+
+                            optionsContainer.querySelectorAll('.quiz-option').forEach(opt => {
+                                opt.classList.remove('selected');
+                            });
+                            this.classList.add('selected');
+                            selectedOptionValue = parseInt(this.dataset.value);
+                        });
                     });
 
-                    nextButton.textContent = "পরবর্তী প্রশ্ন";
                     if (currentQuestionIndex === quizData.length - 1) {
-                        nextButton.textContent = "ফলাফল দেখুন"; // Change text on last question
+                        nextButton.textContent = "ফলাফল দেখুন"; 
                     }
 
                 } else {
-                    // End of quiz, redirect to result page
                     window.location.href = "{{ url_for('user.quiz_result', chapter_id=chapter.id) }}";
                 }
             }
 
-            nextButton.addEventListener('click', function() {
-                const selectedOption = document.querySelector('input[name="quiz_option"]:checked');
-                let userChoice = selectedOption ? parseInt(selectedOption.value) : null;
-                
-                if (!selectedOption && currentQuestionIndex < quizData.length) {
-                    alert("অনুগ্রহ করে একটি অপশন নির্বাচন করুন।");
-                    return;
-                }
-                
-                const question = quizData[currentQuestionIndex];
-                const isCorrect = (userChoice === question.correct_option_number);
-                
-                let pointsEarnedForThisQuestion = 0.0;
-                if (isCorrect) {
-                    pointsEarnedForThisQuestion = question.point_value;
-                } else if (userChoice !== null) { // Only deduct if an answer was chosen (not skipped/no choice)
-                    pointsEarnedForThisQuestion = -question.negative_mark;
-                }
+            // Function to handle showing correct/wrong answers feedback
+            function showAnswerFeedback(actualCorrectOptionNumber, isFinalFeedback = false) {
+                optionsContainer.querySelectorAll('.quiz-option').forEach(opt => {
+                    opt.style.pointerEvents = 'none'; // Disable clicking on options
+                    const optionValue = parseInt(opt.dataset.value);
+                    
+                    if (optionValue === actualCorrectOptionNumber) {
+                        opt.classList.add('correct-answer'); // Highlight actual correct answer
+                    } else if (opt.classList.contains('selected') && !isFinalFeedback) { // Only highlight wrong if not final feedback
+                        opt.classList.add('wrong-answer'); // Highlight user's wrong selected answer
+                    }
+                });
+            }
 
-                currentQuizScore += pointsEarnedForThisQuestion;
-                
-                fetch('{{ url_for('user.save_quiz_progress') }}', { 
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': '{{ csrf_token | safe }}' // Ensure this is correctly passed, no tojson needed for string header
-                    },
-                    body: JSON.stringify({
-                        question_id: question.id,
-                        user_choice: userChoice,
-                        is_correct: isCorrect,
-                        points_earned: pointsEarnedForThisQuestion,
-                        quiz_chapter_id: chapterId,
-                        current_question_index: currentQuestionIndex
+            // --- nextButtonHandler ---
+            const nextButtonHandler = function() {
+                if (!isAnswerSubmitted) { // FIRST CLICK: User submits an answer
+                    if (selectedOptionValue === null) {
+                        alert("অনুগ্রহ করে একটি অপশন নির্বাচন করুন।");
+                        return;
+                    }
+                    
+                    const question = quizData[currentQuestionIndex];
+                    const isCorrect = (selectedOptionValue === question.correct_option_number);
+                    
+                    let pointsEarnedForThisQuestion = 0.0;
+                    if (isCorrect) {
+                        pointsEarnedForThisQuestion = question.point_value;
+                    } else { 
+                        pointsEarnedForThisQuestion = -question.negative_mark;
+                    }
+
+                    currentQuizScore += pointsEarnedForThisQuestion;
+                    isAnswerSubmitted = true; // Mark answer as submitted/checked
+
+                    // Send data to server to save progress and update session
+                    fetch('{{ url_for('user.save_quiz_progress') }}', { 
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': '{{ csrf_token | safe }}' 
+                        },
+                        body: JSON.stringify({
+                            question_id: question.id,
+                            user_choice: selectedOptionValue,
+                            is_correct: isCorrect,
+                            points_earned: pointsEarnedForThisQuestion,
+                            quiz_chapter_id: chapterId,
+                            current_question_index: currentQuestionIndex 
+                        })
                     })
-                })
-                .then(response => {
-                    // Check if response is ok, otherwise throw error
-                    if (!response.ok) {
-                        return response.json().then(errorData => { 
-                            // Try to get message from errorData, or fall back to generic message
-                            throw new Error(errorData.message || `সার্ভার প্রতিক্রিয়া ত্রুটি: ${response.status} ${response.statusText}`); 
-                        }).catch(() => {
-                            // If response.json() fails, it's not valid JSON, so display raw response text
-                            return response.text().then(text => { 
+                    .then(response => {
+                        const contentType = response.headers.get("content-type");
+                        if (contentType && contentType.indexOf("application/json") !== -1) {
+                            return response.json().then(data => {
+                                if (!response.ok) {
+                                    throw new Error(data.message || `সার্ভার প্রতিক্রিয়া ত্রুটি: ${response.status} ${response.statusText}`);
+                                }
+                                return data;
+                            });
+                        } else {
+                            return response.text().then(text => {
+                                console.error("Server response was not JSON:", text);
                                 throw new Error(`সার্ভার থেকে অপ্রত্যাশিত প্রতিক্রিয়া: ${text.substring(0, 100)}... (HTTP ${response.status})`);
                             });
-                        });
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    if (data.status === 'success') {
-                        console.log('Progress saved:', data.message);
-                        
-                        if (isAuthenticated) { 
-                            if (userTotalPointsDisplay && data.new_total_points !== undefined && data.new_total_points !== null) {
-                                userTotalPointsDisplay.textContent = data.new_total_points.toFixed(2);
-                            }
-                            if (userCurrentLevelDisplay && data.new_level !== undefined && data.new_level !== null) {
-                                userCurrentLevelDisplay.textContent = data.new_level;
-                            }
                         }
+                    })
+                    .then(data => {
+                        if (data.status === 'success') {
+                            console.log('Progress saved:', data.message);
+                            
+                            if (isAuthenticated) { 
+                                if (userTotalPointsDisplay && data.new_total_points !== undefined && data.new_total_points !== null) {
+                                    userTotalPointsDisplay.textContent = data.new_total_points.toFixed(2);
+                                }
+                                if (userCurrentLevelDisplay && data.new_level !== undefined && data.new_level !== null) {
+                                    userCurrentLevelDisplay.textContent = data.new_level;
+                                }
+                            }
 
-                        if (data.quiz_finished) {
-                            window.location.href = "{{ url_for('user.quiz_result', chapter_id=chapter.id) }}";
+                            if (isCorrect) { // If correct answer, show feedback and proceed immediately
+                                showAnswerFeedback(question.correct_option_number); 
+                                showAnswerButton.style.display = 'none'; 
+                                if (currentQuestionIndex < quizData.length - 1) { 
+                                    currentQuestionIndex++; 
+                                    setTimeout(displayQuestion, 1000); 
+                                } else { 
+                                    window.location.href = "{{ url_for('user.quiz_result', chapter_id=chapter.id) }}";
+                                }
+                            } else { // If wrong answer, show "সঠিক উত্তর" button. Do NOT show feedback immediately.
+                                showAnswerButton.style.display = 'block'; 
+                                nextButton.textContent = "পরবর্তী প্রশ্ন"; 
+                                // Do NOT increment currentQuestionIndex here. User must click next again.
+                                // Do NOT showAnswerFeedback here. User clicks showAnswerButton for that.
+                            }
                         } else {
-                            currentQuestionIndex++;
-                            displayQuestion();
+                            console.error('Failed to save progress:', data.message);
+                            alert(`প্রগতি সেভ করতে ত্রুটি হয়েছে: ${data.message}`);
+                            isAnswerSubmitted = false; 
                         }
-                    } else {
-                        console.error('Failed to save progress:', data.message);
-                        alert(`প্রগতি সেভ করতে ত্রুটি হয়েছে: ${data.message}`);
+                    })
+                    .catch(error => {
+                        console.error('Fetch error:', error);
+                        alert(`নেটওয়ার্ক ত্রুটি বা সার্ভার থেকে প্রতিক্রিয়া ত্রুটি: ${error.message}`);
+                        isAnswerSubmitted = false; 
+                    });
+                } else { // SECOND CLICK: User proceeds to next question after answer has been checked (only for wrong answers)
+                    // This block is executed if isAnswerSubmitted is true.
+                    // This means a response has come back from the server.
+                    // Now, regardless of whether it was correct (already advanced) or wrong (needs to advance now)
+                    if (currentQuestionIndex < quizData.length - 1) { 
+                        currentQuestionIndex++; 
+                        displayQuestion(); 
+                    } else { 
+                        window.location.href = "{{ url_for('user.quiz_result', chapter_id=chapter.id) }}";
                     }
-                })
-                .catch(error => {
-                    console.error('Fetch error:', error);
-                    alert(`নেটওয়ার্ক ত্রুটি বা সার্ভার থেকে প্রতিক্রিয়া ত্রুটি: ${error.message}`);
-                });
-            });
+                }
+            };
 
-            // Initial display
+            // --- showAnswerHandler ---
+            const showAnswerHandler = function() {
+                const question = quizData[currentQuestionIndex];
+                showAnswerFeedback(question.correct_option_number, true); // Show correct answer feedback (isFinalFeedback = true)
+
+                showAnswerButton.style.display = 'none'; 
+                nextButton.textContent = "পরবর্তী প্রশ্ন"; 
+            };
+
+            nextButton.addEventListener('click', nextButtonHandler);
+            showAnswerButton.addEventListener('click', showAnswerHandler);
+
             displayQuestion();
         });
     </script>
-    <style>
-        /* Basic styling for quiz options */
-        .quiz-option {
-            margin-bottom: 10px;
-            padding: 10px;
-            border: 1px solid #eee;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .quiz-option:hover {
-            background-color: #f9f9f9;
-        }
-        .quiz-option input[type="radio"] {
-            margin-right: 10px;
-        }
-        /* Style for media display */
-        #media-display img, #media-display video {
-            max-width: 100%;
-            height: auto;
-            display: block;
-            margin: 0 auto;
-            border-radius: 5px;
-        }
-    </style>
-{% endblock %}
+{% endblock scripts %}

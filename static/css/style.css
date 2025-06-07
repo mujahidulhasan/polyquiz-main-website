@@ -596,6 +596,144 @@ footer p {
     border: 2px solid white;
     margin-bottom: 10px;
 }
+.quiz-option {
+    padding: 15px;
+    border: 2px solid var(--accent-sky-blue); /* CHANGED: স্ট্রোক accent-sky-blue */
+    border-radius: 8px; /* কর্নার রাউন্ড করা */
+    color: var(--accent-sky-blue); /* টেক্সটের কালার accent-sky-blue */
+    background-color: var(--primary-bg); /* সাদা ব্যাকগ্রাউন্ড */
+    cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+    display: flex; /* অপশন টেক্সট অ্যালাইনমেন্টের জন্য */
+    align-items: center;
+    justify-content: center; /* অপশন টেক্সটকে মাঝখানে আনতে */
+    text-align: center; /* টেক্সটকে মাঝখানে আনতে */
+}
+.quiz-option:hover {
+    background-color: #f9f9f9;
+}
+.quiz-option input[type="radio"] {
+    margin-right: 10px;
+}
+/* Style for media display */
+#media-display img, #media-display video {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+    border-radius: 5px;
+}
+/* Styles for selected/correct/wrong options */
+.quiz-option.selected {
+    background-color: var(--accent-sky-blue); /* Selected option fill */
+    color: white; /* Text becomes white */
+    border-color: var(--accent-sky-blue);
+}
+.quiz-option.correct-answer {
+    background-color: var(--secondary-green); /* Correct answer fill */
+    color: white;
+    border-color: var(--secondary-green);
+}
+.quiz-option.wrong-answer {
+    background-color: var(--accent-red); /* Wrong answer fill */
+    color: white;
+    border-color: var(--accent-red);
+}
+/* Styles for quiz navigation buttons */
+.quiz-navigation-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+.quiz-button {
+    background-color: var(--accent-sky-blue); /* Button background */
+    color: white; /* Button text */
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px; /* Rounded corners */
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s ease;
+}
+.quiz-button:hover {
+    background-color: var(--secondary-dark-blue);
+}
+.show-answer-button {
+    margin-right: auto; /* Push to left */
+    border-radius: 30px;
+}
+.next-question-button {
+    margin-left: auto; /* Push to right */
+    border-radius: 30px;
+}
+.quiz-page-title { /* Style for Subject - Chapter title */
+    font-size: 1.5em;
+    color: var(--accent-sky-blue);
+    text-align: center;
+    margin-bottom: 20px;
+}
+/* Quiz question box */
+.quiz-question-box {
+    background-color: var(--accent-sky-blue); /* Fill with accent-sky-blue */
+    border-radius: 20px; /* Rounded corners */
+    padding: 20px;
+    width: 270px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    display: flex; /* Flexbox ব্যবহার করে কন্টেন্ট মাঝখানে আনা */
+    flex-direction: column;
+    justify-content: center; /* উল্লম্বভাবে মাঝখানে */
+    align-items: center; /* অনুভূমিকভাবে মাঝখানে */
+    text-align: center; 
+}
+#question-number {
+    font-size: 0.8rem;
+    position: absolute;
+    top: 140px;
+    left: 290px;
+}
+.quiz-question-box h3, .quiz-question-box p {
+    color: white; /* White text for question */
+    text-align: center; /* নিশ্চিত করতে টেক্সট মাঝখানে */
+    font-weight: bold; /* CHANGED: প্রশ্ন বোল্ড করে লেখা থাকবে */
+    font-size: 1.5em; /* CHANGED: প্রশ্নের আকার কিছুটা বড় হবে */
+}
+.quiz-options-grid {
+    display: grid;
+    grid-template-columns: 1fr; /* Single column for options by default */
+    gap: 15px;
+}
+/* Options styling */
+.quiz-option {
+    padding: 15px;
+    border: 1px solid var(--primary-border); /* Stroke for options */
+    border-radius: 8px; /* Rounded corners for options */
+    color: var(--accent-sky-blue); /* Text color for options */
+    background-color: var(--primary-bg); /* White background for options */
+    cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+    display: flex; /* For option text alignment */
+    align-items: center;
+}
+.quiz-option:hover {
+    background-color: var(--accent-light-gray);
+    border-color: var(--accent-sky-blue);
+    color: var(--accent-sky-blue);
+}
+.user-quiz-info {
+    text-align: center;
+    margin-top: 30px;
+    font-size: 0.95em;
+    color: #6c757d;
+}
+/* Media responsiveness */
+#media-display img, #media-display video {
+    max-width: 100%;
+    height: auto;
+    border-radius: 5px;
+    margin: 15px auto; /* Center media */
+    display: block;
+}
 .developed-by-section .social-links { /* Social media icons */
     display: flex;
     gap: 15px;

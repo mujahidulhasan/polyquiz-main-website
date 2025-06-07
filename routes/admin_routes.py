@@ -115,29 +115,32 @@ def manage_chapters():
     if form.validate_on_submit():
         chapter_name = form.name.data
         subject_id = form.subject_id.data
-        #for_class = form.for_class.data
+        # for_class = form.for_class.data # REMOVED: No longer using for_class
         is_active = form.is_active.data
         image_file = form.image_file.data # Get file from form
 
-        existing_chapter = Chapter.query.filter_by(name=chapter_name, subject_id=subject_id, for_class=for_class).first()
+        # CHANGED: Removed for_class from filter_by query
+        existing_chapter = Chapter.query.filter_by(name=chapter_name, subject_id=subject_id).first() 
         if existing_chapter:
-            flash('এই অধ্যায়টি এই বিষয়ে এবং ক্লাসে ইতিমধ্যে বিদ্যমান।', 'danger')
+            flash('এই অধ্যায়টি এই বিষয়ে ইতিমধ্যে বিদ্যমান।', 'danger') # CHANGED: Message adjusted
         else:
             image_url = None
             if image_file and file_upload_handler.allowed_file(image_file.filename):
                 image_url = file_upload_handler.upload_file_to_cloudinary(image_file, folder_name='chapter_icons')
                 if not image_url:
                     flash('অধ্যায়ের ছবি আপলোডে ত্রুটি।', 'danger')
-                    return render_template('admin/manage_chapters.html', chapters=Chapter.query.all(), form=form, subjects=Subject.query.all()) # ADDED subjects here
-            new_chapter = Chapter(name=chapter_name, subject_id=subject_id, for_class=for_class, is_active=is_active, image_url=image_url)
+                    return render_template('admin/manage_chapters.html', chapters=Chapter.query.all(), form=form, subjects=Subject.query.all())
+            
+            # CHANGED: Removed for_class from Chapter creation
+            new_chapter = Chapter(name=chapter_name, subject_id=subject_id, is_active=is_active, image_url=image_url) 
             db.session.add(new_chapter)
             db.session.commit()
             flash('অধ্যায় সফলভাবে যোগ করা হয়েছে!', 'success')
             return redirect(url_for('admin.manage_chapters'))
     
     chapters = Chapter.query.order_by(Chapter.subject_id, Chapter.name).all()
-    subjects = Subject.query.all() # ADDED: Query all subjects
-    return render_template('admin/manage_chapters.html', chapters=chapters, form=form, subjects=subjects) # CHANGED: Pass subjects
+    subjects = Subject.query.all() # Query all subjects to pass to template
+    return render_template('admin/manage_chapters.html', chapters=chapters, form=form, subjects=subjects)
 
 @admin_bp.route('/chapters/edit/<int:chapter_id>', methods=['GET', 'POST'])
 # @login_required 
@@ -149,7 +152,7 @@ def edit_chapter(chapter_id):
     if form.validate_on_submit():
         chapter.name = form.name.data
         chapter.subject_id = form.subject_id.data
-        #chapter.for_class = form.for_class.data
+        # chapter.for_class = form.for_class.data # REMOVED: No longer using for_class
         chapter.is_active = form.is_active.data
         image_file = form.image_file.data
 
@@ -159,19 +162,20 @@ def edit_chapter(chapter_id):
             
             new_image_url = file_upload_handler.upload_file_to_cloudinary(image_file, folder_name='chapter_icons')
             if not new_image_url:
-                flash('নতুন অধ্যায়ের ছবি আপloade ত্রুটি।', 'danger')
-                return render_template('admin/edit_chapter.html', form=form, chapter=chapter, subjects=Subject.query.all()) # ADDED subjects here
+                flash('নতুন অধ্যায়ের ছবি আপলোডে ত্রুটি।', 'danger')
+                return render_template('admin/edit_chapter.html', form=form, chapter=chapter, subjects=Subject.query.all())
             chapter.image_url = new_image_url
         elif 'remove_image' in request.form and request.form['remove_image'] == 'true':
             if chapter.image_url:
                 file_upload_handler.delete_file_from_cloudinary(chapter.image_url)
-            chapter.image_url = None
+                chapter.image_url = None
         
         db.session.commit()
         flash('অধ্যায় সফলভাবে আপডেট করা হয়েছে!', 'success')
         return redirect(url_for('admin.manage_chapters'))
     
-    return render_template('admin/edit_chapter.html', form=form, chapter=chapter, subjects=Subject.query.all()) # CHANGED: Pass subjects
+    subjects = Subject.query.all() # Query all subjects to pass to template for GET request
+    return render_template('admin/edit_chapter.html', form=form, chapter=chapter, subjects=subjects)
 
 @admin_bp.route('/chapters/delete/<int:chapter_id>', methods=['POST'])
 # @login_required 
@@ -303,7 +307,7 @@ def site_settings():
                     db.session.add(SiteSetting(setting_key='developer_image_url', setting_value=new_image_url))
             else:
                 flash('ডেভেলপার ছবি আপলোডে ত্রুটি।', 'danger')
-        elif 'remove_developer_image' in request.form and request.form['remove_developer_image'] == 'true':
+        elif 'remove_developer_image' in request.form and request.form['remove_image'] == 'true':
             if developer_image_setting and developer_image_setting.setting_value:
                 file_upload_handler.delete_file_from_cloudinary(developer_image_setting.setting_value)
                 developer_image_setting.setting_value = None 

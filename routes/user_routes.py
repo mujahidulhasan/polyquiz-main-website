@@ -1,3 +1,5 @@
+# polyquiz/routes/user_routes.py
+
 from flask import Blueprint, render_template, redirect, url_for, flash, session, request, jsonify 
 from flask_login import login_required, current_user
 from models import User, AdminUser, Subject, Chapter, QuizQuestion, UserQuizAttempt, db
@@ -12,7 +14,7 @@ logger = logging.getLogger(__name__)
 user_bp = Blueprint('user', __name__)
 
 @user_bp.route('/dashboard')
-@login_required # Requires user to be logged in
+@login_required 
 def dashboard():
     logger.info("Attempting to access user dashboard.")
     if isinstance(current_user, AdminUser):
@@ -46,12 +48,12 @@ def select_chapter(subject_id):
     return render_template('chapter_selection.html', subject=subject, chapters=chapters)
 
 @user_bp.route('/play_quiz/<int:chapter_id>')
-# @login_required # Temporarily disabled for easier testing
+# @login_required 
 def play_quiz(chapter_id):
     logger.info(f"Attempting to play quiz for chapter ID: {chapter_id}")
     chapter = Chapter.query.get_or_404(chapter_id)
     
-    questions = QuizQuestion.query.filter_by(chapter_id=chapter.id).order_by(func.random()).limit(10).all()
+    questions = QuizQuestion.query.filter_by(chapter_id=chapter.id).order_by(func.random()).all() 
 
     if not questions:
         logger.info(f"No questions found for chapter ID: {chapter_id}. Redirecting.")
@@ -84,43 +86,52 @@ def play_quiz(chapter_id):
 
     csrf_token = generate_csrf() 
     
-    return render_template('quiz_play.html', chapter=chapter, csrf_token=csrf_token)
+    return render_template('quiz_play.html', chapter=chapter, csrf_token=csrf_token, subject=chapter.subject) 
 
 @user_bp.route('/save_quiz_progress', methods=['POST'])
-# @login_required # Temporarily disabled for easier testing
+# @login_required 
 def save_quiz_progress():
     logger.info("Received request to save quiz progress.")
     # Verify CSRF token manually as it's an AJAX request
     if not request.headers.get('X-CSRFToken'):
         logger.warning("CSRF token missing in AJAX request headers.")
-        return jsonify({'status': 'error', 'message': 'CSRF টoken অনুপস্থিত।'}), 403 
+        return jsonify({'status': 'error', 'message': 'CSRF টোকেন অনুপস্থিত।'}), 403 
     
     try: 
         data = request.get_json()
         
         quiz_data = session.get('current_quiz')
-        current_question_index = session.get('current_question_index')
+        current_question_index_session = session.get('current_question_index') # Get index from session
         user_answers = session.get('user_answers')
         quiz_total_score = session.get('quiz_total_score', 0.0)
 
-        if not quiz_data or current_question_index is None or user_answers is None:
-            logger.error("save_quiz_progress: Quiz data not found in session or invalid state.")
+        # Check if incoming index from JS matches session index
+        incoming_question_index_from_js = data.get('current_question_index') # This is the index sent from JS
+        
+        if not quiz_data or current_question_index_session is None or user_answers is None:
+            logger.error("save_quiz_progress: Quiz data not found in session or invalid state. Returning 400.")
             return jsonify({'status': 'error', 'message': 'কুইজ ডেটা সেশনে পাওয়া যায়নি বা সেশন মেয়াদোত্তীর্ণ।'}), 400
 
         question_id = data.get('question_id')
         user_choice = data.get('user_choice')
         
-        if current_question_index >= len(quiz_data) or quiz_data[current_question_index]['id'] != question_id:
-            logger.error(f"save_quiz_progress: Session question ID mismatch. Expected {quiz_data[current_question_index]['id']}, Got {question_id}. Current index {current_question_index}.")
-            return jsonify({'status': 'error', 'message': 'সেশনের প্রশ্ন আইডি মিলছে না। সম্ভবত ব্রাউজার রিলোড হয়েছে।'}), 400
+        # CHANGED: Use incoming_question_index_from_js for validation instead of session index
+        # This allows JS to send the index it just displayed, and server can validate
+        if incoming_question_index_from_js is None:
+            logger.error("save_quiz_progress: Incoming index from JS is None. Returning 400.")
+            return jsonify({'status': 'error', 'message': 'জাভাস্ক্রিপ্ট থেকে প্রশ্ন ক্রম পাওয়া যায়নি।'}), 400
+        
+        if incoming_question_index_from_js >= len(quiz_data) or quiz_data[incoming_question_index_from_js]['id'] != question_id:
+            logger.error(f"save_quiz_progress: Session question ID/Index mismatch. Expected ID: {quiz_data[current_question_index_session]['id']}, Got ID: {question_id}. Expected Index: {current_question_index_session}, Got Index from JS: {incoming_question_index_from_js}.")
+            return jsonify({'status': 'error', 'message': 'সেশনের প্রশ্ন আইডি বা ক্রম মিলছে না। সম্ভবত ব্রাউজার রিলোড হয়েছে বা ডেটা ভুল।'}), 400
 
-        question_details = quiz_data[current_question_index]
+        question_details = quiz_data[incoming_question_index_from_js] # Use incoming index for current question details
         is_correct = (user_choice == question_details['correct_option_number']) if user_choice is not None else False
         
         points_earned = 0.0
         if is_correct:
             points_earned = question_details['point_value']
-        elif user_choice is not None:
+        elif user_choice is not None: 
             points_earned = -question_details['negative_mark']
         
         quiz_total_score += points_earned
@@ -137,8 +148,8 @@ def save_quiz_progress():
         })
 
         session['user_answers'] = user_answers
-        session['current_question_index'] = current_question_index + 1
         session['quiz_total_score'] = quiz_total_score
+        session['current_question_index'] = incoming_question_index_from_js + 1 # Update session index based on incoming JS index + 1
 
         new_user_total_points = None
         new_user_level = None
@@ -160,7 +171,7 @@ def save_quiz_progress():
             'message': 'প্রগতি সেভ করা হয়েছে।', 
             'new_total_points': new_user_total_points, 
             'new_level': new_user_level,
-            'quiz_finished': session['current_question_index'] >= len(quiz_data)
+            'quiz_finished': (incoming_question_index_from_js + 1) >= len(quiz_data) 
         }), 200
 
     except Exception as e: 
